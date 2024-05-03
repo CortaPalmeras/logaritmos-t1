@@ -16,9 +16,6 @@ uniform_real_distribution<double> dist_0_1(0.0, 1.0);
 uniform_real_distribution<double> dist_0_inf(0.0, numeric_limits<double>::max());
 uniform_int_distribution<int> dist_0_inf(0.0, numeric_limits<int>::max());
 
-const int B = 4096;
-const int b = (0.5 * B);
-
 typedef struct {
     double x;
     double y;
@@ -29,30 +26,37 @@ typedef struct {
     double radio;
 } Query;
 
-typedef struct Nodo {
+typedef struct Entry{
     Punto punto;
     double radio;
-    vector<Nodo> direcciones;
+    Nodo *direccion;
+}Entry;
+
+typedef struct Nodo {
+    vector <Entry> Entradas;
 } Nodo;
+const int B = 4096/(sizeof(Entry));
+const int b = (0.5 * B);
 
 int distancia(Punto &a, Punto &b) {
     return sqrt(pow((a.x - b.x), 2) + pow((a.y - b.y), 2));
 }
 
 // falta colocar la cantidad de accesos a disco
-vector<Nodo> Busqueda(Nodo &arbol, Query &consulta) {
-    vector<Nodo> resultado;
-    for (auto it : arbol.direcciones) {
-        if (it.direcciones.empty()) {
-            if (distancia(it.punto, consulta.punto) < consulta.radio) {
-                resultado.push_back(it);
+vector<Punto> Busqueda(Nodo &arbol, Query &consulta) {
+    vector<Punto> resultado;
+    if(arbol.Entradas[0].direccion==NULL){
+        for (auto it =arbol.Entradas.begin();it!=arbol.Entradas.end();it++){
+            if(distancia((*it).punto,consulta.punto)<=consulta.radio){
+                resultado.push_back((*it).punto);
             }
-        } else {
-            if (distancia((it).punto, consulta.punto) <= ((it).radio + consulta.radio)) {
-                for (auto it1 : it.direcciones) {
-                    vector<Nodo> busqueda = Busqueda(it1, consulta);
-                    resultado.insert(resultado.end(), busqueda.begin(), busqueda.end());
-                }
+            
+        }
+    }
+    else{
+        for(auto it=arbol.Entradas.begin();it!=arbol.Entradas.end();it++){
+            if(distancia((*it).punto, consulta.punto)<=(*it).radio+consulta.radio){
+                Busqueda(*((*it).direccion),consulta);
             }
         }
     }
@@ -154,24 +158,20 @@ double gen_coordenada() {
     return dist_0_1(generador);
 }
 
-double gen_radio() {
-    return dist_0_inf(generador);
-}
-
-vector<Nodo> crear_conjunto_nodos(int cantidad) {
-    vector<Nodo> resultado(cantidad);
+vector<Punto> crear_conjunto_puntos(int cantidad) {
+    vector <Punto> resultado;
 
     for (int i = 0; i < cantidad; i++) {
-        resultado[i].punto.x = gen_coordenada();
-        resultado[i].punto.y = gen_coordenada();
-        resultado[i].radio = gen_radio();
+        Punto punto;
+        punto.x=gen_coordenada();
+        punto.y=gen_coordenada();
+        resultado.push_back(punto);
     }
-
     return resultado;
 }
 
 vector<Query> crear_conjunto_query() {
-    int n_queries;
+    int n_queries=100;
     vector<Query> conjunto_queries(n_queries);
 
     for (int i = 0; i < n_queries; i++) {
@@ -179,6 +179,5 @@ vector<Query> crear_conjunto_query() {
         conjunto_queries[i].punto.y = gen_coordenada();
         conjunto_queries[i].radio = 0.02;
     }
-
     return conjunto_queries;
 }
