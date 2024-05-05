@@ -10,6 +10,8 @@ using namespace std;
 // el enunciado que 4096 equivale a un bloque y el acceso a un bloque equivale
 // al acceso a un nodo
 
+const int B = 4096/(sizeof(Entry));
+const int b = (0.5 * B);
 random_device dev;
 mt19937 generador(dev());
 uniform_real_distribution<double> dist_0_1(0.0, 1.0);
@@ -35,8 +37,6 @@ typedef struct Entry{
 typedef struct Nodo {
     vector <Entry> Entradas;
 } Nodo;
-const int B = 4096/(sizeof(Entry));
-const int b = (0.5 * B);
 
 int distancia(Punto &a, Punto &b) {
     return sqrt(pow((a.x - b.x), 2) + pow((a.y - b.y), 2));
@@ -90,6 +90,7 @@ vector<Nodo> random_subset(vector<Nodo> &puntos, int k) {
         indices[i] = i;
     }
 
+    
     // Shuffle the vector using Fisher-Yates algorithm
     for (int i = 0; i < k; i++) {
         int j = % (i + 1);
