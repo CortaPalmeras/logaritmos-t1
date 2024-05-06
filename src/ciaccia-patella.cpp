@@ -5,11 +5,10 @@
 #include <random>
 #include <vector>
 
-#include "tarea1.hpp"
 #include "ciaccia-patella.hpp"
+#include "tarea1.hpp"
 
 using namespace std;
-
 
 // Algoritmo de Ciaccia - Patella
 Nodo *ciaccia_patella(Conjunto const &p_in) {
@@ -140,9 +139,6 @@ paso_12:
 paso_13:
     return T_superior;
 }
-
-
-
 
 Conjunto *random_sample(Conjunto const &puntos, int k) {
     int n = puntos.size();

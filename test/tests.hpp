@@ -9,8 +9,7 @@
 void crear_conjuntos_random();
 
 ConjuntoQ *querys;
-std::vector<Conjunto*> conjuntos(15);
-
+std::vector<Conjunto *> conjuntos(15);
 
 void test_ciaccia_patella();
 
