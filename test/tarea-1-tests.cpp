@@ -20,7 +20,7 @@ int main(int argc, char **argv) {
 void test_estrucutra_correcta(Nodo &arbol) {}
 
 // Este test checkea que los radios de las entradas esten correctos.
-void test_puntos_correctos(Nodo &arbol) {}
+void test_puntos_correctos(Nodo &arbol, Conjunto &puntos) {}
 
 
 Conjunto *generar_conjunto_puntos(int cantidad) {
@@ -34,7 +34,9 @@ Conjunto *generar_conjunto_puntos(int cantidad) {
     return resultado;
 }
 
-void eliminar_conjunto_puntos(Conjunto *puntos) {}
+void eliminar_conjunto_puntos(Conjunto *puntos) {
+    delete puntos;
+}
 
 vector<Query> *generar_conjunto_queries(int cantidad) {
     vector<Query> *queries = new vector<Query>(cantidad);
@@ -48,4 +50,7 @@ vector<Query> *generar_conjunto_queries(int cantidad) {
     return queries;
 }
 
-void eliminar_conjunto_queries(vector<Query> *queries) {}
+void eliminar_conjunto_queries(vector<Query> *queries) {
+    delete queries;
+}
+

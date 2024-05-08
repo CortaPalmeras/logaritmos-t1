@@ -3,8 +3,9 @@
 #ifndef CIACCIA_PATELLA
 #define CIACCIA_PATELLA
 
-#include "tarea1.hpp"
 #include <map>
+
+#include "tarea1.hpp"
 
 Nodo *ciaccia_patella(Conjunto const &p_in);
 

@@ -48,17 +48,17 @@ std::uniform_real_distribution<double> dist_double_0_inf(0.0, std::numeric_limit
 std::uniform_int_distribution<int> dist_int_0_inf(0.0, std::numeric_limits<int>::max());
 
 inline double random_double() {
-    dist_double(rdg);
+    return dist_double(rdg);
 }
 
 inline double random_double_0_a_1() {
-    dist_double_0_1(rdg);
+    return dist_double_0_1(rdg);
 }
 
 inline double random_double_positivo() {
-    dist_double_0_1(rdg);
+    return dist_double_0_1(rdg);
 }
 
 inline int random_int_positivo() {
-    dist_int_0_inf(rdg);
+    return dist_int_0_inf(rdg);
 }
