@@ -3,11 +3,11 @@
 #include <cmath>
 #include <vector>
 
+#include "tarea1.hpp"
 #include "busqueda.hpp"
 #include "ciaccia-patella.hpp"
-#include "tarea1.hpp"
-
-#include "tests.hpp"
+#include "sexton-swinbank.hpp"
+#include "tarea-1-tests.hpp"
 
 using namespace std;
 
@@ -61,7 +61,7 @@ double Media(vector<double> &muestra) {
     }
 }
 
-v > oid test_intervalo_confianz(vector<double> &muestra) {
+void test_intervalo_confianz(vector<double> &muestra) {
     double nivel_confianza = 0.95;
     pair<double, double> intervalo_confianza = intervaloConfianza(muestra, nivel_confianza);
 }

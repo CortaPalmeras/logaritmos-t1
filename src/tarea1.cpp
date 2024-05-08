@@ -38,3 +38,27 @@ int altura_arbol(Nodo const &arbol) {
         return altura_arbol(*arbol.entradas[0].a) + 1;
     }
 }
+
+
+std::mt19937 rdg(GLOBAL_RANDOM_SEED);
+std::uniform_real_distribution<double> dist_double(
+    std::numeric_limits<double>::min(), std::numeric_limits<double>::max());
+std::uniform_real_distribution<double> dist_double_0_1(0.0, 1.0);
+std::uniform_real_distribution<double> dist_double_0_inf(0.0, std::numeric_limits<double>::max());
+std::uniform_int_distribution<int> dist_int_0_inf(0.0, std::numeric_limits<int>::max());
+
+inline double random_double() {
+    dist_double(rdg);
+}
+
+inline double random_double_0_a_1() {
+    dist_double_0_1(rdg);
+}
+
+inline double random_double_positivo() {
+    dist_double_0_1(rdg);
+}
+
+inline int random_int_positivo() {
+    dist_int_0_inf(rdg);
+}

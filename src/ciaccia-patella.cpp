@@ -79,21 +79,11 @@ paso_7:
             int a_size = arboles.size();
             arboles.resize(a_size + arbol->size);
 
-            // ---- ACORDARSE DE BORRAR ESTO ----
-            // Me di cuenta de que la partición ya no es necesario
-            // pero no quiero borrar el codigo todavía por si acaso.
-            // particion->erase(particion->begin() + i);
-            // int p_size = particion->size();
-            // particion->resize(p_size + arbol->size);
-
             // Se añaden los sub arboles al cunjunto de arboles
             // y los puntos pertinentes a F.
             for (int j = 0; j < arbol->size; j++) {
                 (*F)[F_size + j] = arbol->entradas[j].p;
                 arboles[a_size + j] = arbol->entradas[j].a;
-
-                // Esto tampoco es necesario
-                // extraer_hojas(*arbol, (*particion)[p_size + j]);
             }
 
             // Se libera la memoria del nodo raiz.
@@ -150,7 +140,7 @@ Conjunto *random_sample(Conjunto const &puntos, int k) {
     }
 
     for (int i = 0; i < k; i++) {
-        int j = dist_int_0_inf(rdg) % (n - i) + i;
+        int j = random_int_positivo() % (n - i) + i;
         F->push_back(puntos[indices[j]]);
         indices[j] = indices[i];
     }
@@ -216,6 +206,9 @@ void asignar_distancias_arbol(Nodo &arbol) {
     }
 }
 
+// Esta función está mal
+// asume que el nodo al que apunta una entrada siempre tiene su punto
+// pero esto no es cierto
 void asignar_distancias_entrada(Entry &entrada) {
     Nodo &nodo = *entrada.a;
 
@@ -242,14 +235,3 @@ void asignar_distancias_entrada(Entry &entrada) {
         }
     }
 }
-
-// Función inutil :)
-// void extraer_hojas(Nodo const &arbol, Conjunto &out) {
-//     for (auto entrada : arbol.entradas) {
-//         if (entrada.a == NULL) {
-//             out.push_back(entrada.p);
-//         } else {
-//             extraer_hojas(*entrada.a, out);
-//         }
-//     }
-// }

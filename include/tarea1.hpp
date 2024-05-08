@@ -13,12 +13,7 @@ struct query;
 struct entry;
 struct nodo;
 
-const int seed_global = 37;
-
-std::mt19937 rdg(seed_global);
-std::uniform_real_distribution<double> dist_0_1(0.0, 1.0);
-std::uniform_real_distribution<double> dist_0_inf(0.0, std::numeric_limits<double>::max());
-std::uniform_int_distribution<int> dist_int_0_inf(0.0, std::numeric_limits<int>::max());
+#define GLOBAL_RANDOM_SEED 37
 
 typedef struct punto {
     double x;
@@ -46,7 +41,6 @@ typedef struct nodo {
 
 typedef std::vector<punto> Conjunto;
 typedef std::vector<Conjunto> Particion;
-typedef std::vector<Query> ConjuntoQ;
 
 inline bool operator==(Punto const &a, Punto const &b) {
     return a.x == b.x && a.y == b.y;
@@ -63,5 +57,10 @@ void anadir_entrada(Nodo *n, Punto p);
 int altura_arbol(Nodo const &arbol);
 
 void eliminar_arbol(Nodo *arbol);
+
+inline double random_double();
+inline double random_double_0_a_1();
+inline double random_double_positivo();
+inline int random_int_positivo();
 
 #endif
