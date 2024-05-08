@@ -42,7 +42,7 @@ vector<Query> *generar_conjunto_queries(int cantidad) {
     for (int i = 0; i < cantidad; i++) {
         (*queries)[i].p.x = random_double_0_a_1();
         (*queries)[i].p.y = random_double_0_a_1();
-        (*queries)[i].r = random_double_positivo();
+        (*queries)[i].r = 0.2;
     }
 
     return queries;
