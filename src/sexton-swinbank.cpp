@@ -77,26 +77,7 @@ void elegirParesCercanos(Particion c, map<Conjunto, Punto> medoide,
     }
 }
 
-// Función potencialmente inutil, la escribi y despues me di cuenta de que no servía.
-double radio_cobertor(Conjunto &a, Conjunto &b, int indice) {
-    double r_max = numeric_limits<double>::min();
 
-    for (int i = 0; i < a.size(); i++) {
-        if (i != indice) {
-            double r_candidato = distancia(a[indice], a[i]);
-            r_max = r_max > r_candidato ? r_max : r_candidato;
-        }
-    }
-
-    for (int i = 0; i < b.size(); i++) {
-        if (i != indice) {
-            double r_candidato = distancia(a[indice], b[i]);
-            r_max = r_max > r_candidato ? r_max : r_candidato;
-        }
-    }
-
-    return r_max;
-}
 
 
 vector<Conjunto> crear_clusters(Conjunto &c_in) {
@@ -161,4 +142,93 @@ vector<Conjunto> crear_clusters(Conjunto &c_in) {
     }
 
     return c_out;
+}
+
+Entry OutPutHoja(Conjunto &c_in){
+    Entry resultado;
+    Nodo c;
+    map<Conjunto,Punto> medoide;
+    elegir_medoide(c_in,medoide);
+    Punto medoide_primario=medoide[c_in];
+    resultado.p=medoide_primario;
+    double r=0;
+    for(int i=0;i<c_in.size();i++){
+        Entry entrada;
+        entrada.p=c_in[i];
+        entrada.a=NULL;
+        entrada.r=0;
+        c.entradas[i]=entrada;
+        r=max(r,distancia(medoide_primario,entrada.p));
+    }
+    resultado.r=r;
+    resultado.a=&c;
+}
+
+Entry OutPutInterno(vector<Entry> c_mra){
+    vector <Punto> c_in;
+    Entry resultado;
+    Nodo c; 
+    for(int i=0;i<c_mra.size();i++){
+        c_in.push_back(c_mra[i].p);
+    }
+    double R=0;
+    map<Conjunto,Punto> medoide;
+    elegir_medoide(c_in, medoide);
+    Punto medoide_primario=medoide[c_in];
+    for (int i=0;i<c_mra.size();i++){
+        c.entradas[i]=c_mra[i];
+        R=max(R,distancia(medoide_primario,c_mra[i].p)+c_mra[i].r);
+    }
+
+    resultado.r=R;
+    resultado.a=&c;
+    resultado.p=medoide_primario;
+    return resultado;
+}
+
+
+
+
+
+Nodo sexton_swinbank(Conjunto c_in){
+    if(c_in.size()<=B){
+        Entry entrada=OutPutHoja(c_in);
+        return *(entrada.a);
+    }
+    vector<Conjunto> c_out=crear_clusters(c_in);
+    vector<Entry> c;
+    for(int i=0;i<c_out.size();i++){
+        c.push_back(OutPutHoja(c_out[i]));
+    }
+    while(c.size()>B){
+        Conjunto c_in;
+        for (int i=0;i<c.size();i++){
+            c_in.push_back(c[i].p);
+        }
+        c_out=crear_clusters(c_in);
+        vector <vector<Entry>> c_mra;
+        for(int i=0;i<c_out.size();i++){
+            vector<Entry> s;
+            for(int j=0;j<c.size();j++){
+                Entry entrada;
+                entrada.p=c[j].p;
+                entrada.a=c[j].a;
+                entrada.r=c[j].r;
+                for(int k=0;k<c_out.size();k++){
+                    if(entrada.p.x==c_out[i][k].x&&entrada.p.y==c_out[i][k].y){
+                        s.push_back(entrada);
+                        break;
+                    }
+                }
+            }
+            c_mra.push_back(s);
+        }
+        vector<Entry>a;
+        c=a;
+        for(int i=0;i<c_mra.size();i++){
+            c.push_back(OutPutInterno(c_mra[i]));
+        }
+    }
+    Entry entrada1=OutPutInterno(c);
+    return *entrada1.a
 }
