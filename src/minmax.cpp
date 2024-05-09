@@ -9,7 +9,7 @@
 
 using namespace std;
 
-typedef vector< vector<double> > mat_distancias;
+typedef vector<vector<double>> mat_distancias;
 
 typedef struct doubly_linked_list {
     int indice = 0;
@@ -17,13 +17,13 @@ typedef struct doubly_linked_list {
     doubly_linked_list *previo = NULL;
 } dll;
 
-inline void añadir_primero(dll **primero, dll *nodo){
+inline void añadir_primero(dll **primero, dll *nodo) {
     (*primero)->previo = nodo;
     nodo->siguiente = *primero;
     *primero = nodo;
 }
 
-inline void añadir_antes(dll *nodo_actual, dll *nodo){
+inline void añadir_antes(dll *nodo_actual, dll *nodo) {
     nodo->previo = nodo_actual->previo;
     nodo->siguiente = nodo_actual;
 
@@ -33,7 +33,7 @@ inline void añadir_antes(dll *nodo_actual, dll *nodo){
 
 inline void añadir_nodo(dll **primero, dll *nodo, mat_distancias &d, int i, int n) {
 
-    // Caso en el quel la distancia con un punto 
+    // Caso en el quel la distancia con un punto
     if (d[i][n] < d[i][(*primero)->indice]) {
         añadir_primero(primero, nodo);
         return;
@@ -57,9 +57,18 @@ inline void añadir_nodo(dll **primero, dll *nodo, mat_distancias &d, int i, int
     }
 }
 
-inline void eliminar_nodo(dll lista[]);
+inline void eliminar_nodo(dll *nodo, dll **primero) {
+    if (nodo == *primero) {
+        *primero = nodo->siguiente;
+    } else if (nodo->siguiente == NULL) {
+        nodo->previo->siguiente = NULL;
+    } else {
+        nodo->previo->siguiente = nodo->siguiente;
+        nodo->siguiente->previo = nodo->previo;
+    }
+}
 
-void MinMaxSplit(Conjunto &puntos, Conjunto **out1, Conjunto **out2) {
+void minmax_split(Conjunto &puntos, Conjunto **out1, Conjunto **out2) {
     double r_min = numeric_limits<double>::max();
 
     // calcular distancias entre todos los puntos,
@@ -76,11 +85,10 @@ void MinMaxSplit(Conjunto &puntos, Conjunto **out1, Conjunto **out2) {
         }
     }
 
-
     // para cada par de puntos:
     for (int i = 0; i < puntos.size(); i++) {
         for (int j = i + 1; j < puntos.size(); j++) {
-            // se crean dos listas doblemente enlazadas de puntos ordenados 
+            // se crean dos listas doblemente enlazadas de puntos ordenados
             // en relación a su distancia con los dos puntos elegidos.
             dll cola_distancias1[puntos.size()];
             dll cola_distancias2[puntos.size()];
@@ -90,7 +98,8 @@ void MinMaxSplit(Conjunto &puntos, Conjunto **out1, Conjunto **out2) {
 
             // Se van añadiendo los indices de los puntos uno por uno a las listas
             for (int n = 0; n < puntos.size(); n++) {
-                if (n == i || n == j) continue;
+                if (n == i || n == j)
+                    continue;
 
                 cola_distancias1[n].indice = n;
                 cola_distancias2[n].indice = n;
@@ -102,12 +111,45 @@ void MinMaxSplit(Conjunto &puntos, Conjunto **out1, Conjunto **out2) {
             Conjunto *out1_candidato = new Conjunto(puntos.size() - puntos.size() / 2);
             Conjunto *out2_candidato = new Conjunto(puntos.size() / 2);
 
-            for (int k = 0; k < puntos.size(); k++) {
+            // se añaden los puntos intercaladamente en los conjuntos.
+            for (int k = 0, fin = puntos.size() - 2; k < fin; k++) {
                 if (k % 2 == 0) {
-                    out1_candidato[k / 2] = 
+                    (*out1_candidato)[k / 2] = puntos[primero1->indice];
+                    eliminar_nodo(cola_distancias2 + primero1->indice, &primero2);
+                    primero1 = primero1->siguiente;
+                } else {
+                    (*out2_candidato)[k / 2] = puntos[primero2->indice];
+                    eliminar_nodo(cola_distancias1 + primero2->indice, &primero1);
+                    primero2 = primero2->siguiente;
                 }
             }
-            
+
+            int ultimo1 = primero1->indice;
+            eliminar_nodo(cola_distancias2 + primero1->indice, &primero2);
+            int ultimo2 = primero2->indice;
+
+            (*out1_candidato)[out1_candidato->size() - 1] = puntos[ultimo1];
+            (*out2_candidato)[out2_candidato->size() - 2] = puntos[ultimo2];
+
+            double r_candidato;
+            if (distancias[i][ultimo1] < distancias[j][ultimo2]) {
+                r_candidato = distancias[j][ultimo2];
+            } else {
+                r_candidato = distancias[i][ultimo1];
+            }
+
+            if (r_candidato < r_min) {
+                if (out1 != NULL) {
+                    delete out1;
+                    delete out2;
+                }
+                r_min = r_candidato;
+                *out1 = out1_candidato;
+                *out2 = out2_candidato;
+            } else {
+                delete out1_candidato;
+                delete out2_candidato;
+            }
         }
     }
 }

@@ -11,4 +11,4 @@ Entry output_hoja(Conjunto &puntos);
 
 Entry output_interno(std::vector<Entry> &tuplas);
 
-void MinMaxSplit(Conjunto &puntos, Conjunto **out1, Conjunto **out2);
+void minmax_split(Conjunto &puntos, Conjunto **out1, Conjunto **out2);

@@ -51,27 +51,27 @@ double Media(vector<double> &muestra) {
     return suma / tamaño;
 }
 
-double Desviacion(vector<double> & muestra, double media) {
+double Desviacion(vector<double> &muestra, double media) {
     double suma = 0.0;
     int tamaño = muestra.size();
 
     for (double valor_muestra) {
         suma += ((valor.media) * (valor - media));
     }
-         double raiz = sqrt(suma / tamaño);
-         return raiz;
-         }
+    double raiz = sqrt(suma / tamaño);
+    return raiz;
+}
 
-         pair<double, double> intervaloConfianza(vector) double
-         &muestra,
-         double nivel_confianza {
-         double media = Media(muestra);
-         double desviacion = Desviacion(muestra, media);
-         double margen = 1.96 * desviacion / sqrt(muestra.size());
-         pair<double, double> par = make_pair(media - margen, media + margen);
-         return par;
-         }
-         }
+pair<double, double> intervaloConfianza(vector) double
+    &muestra,
+    double nivel_confianza {
+    double media = Media(muestra);
+    double desviacion = Desviacion(muestra, media);
+    double margen = 1.96 * desviacion / sqrt(muestra.size());
+    pair<double, double> par = make_pair(media - margen, media + margen);
+    return par;
+}
+}
 
 void test_intervalo_confianz(vector<double> &muestra) {
     double nivel_confianza = 0.95;

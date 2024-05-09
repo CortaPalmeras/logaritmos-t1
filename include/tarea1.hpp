@@ -4,8 +4,6 @@
 #define TAREA_1
 
 #include <cmath>
-#include <limits>
-#include <random>
 #include <vector>
 
 struct punto;
