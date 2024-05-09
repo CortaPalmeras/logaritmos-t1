@@ -1,8 +1,8 @@
 
 #include <vector>
 
-#include "tarea1.hpp"
 #include "tarea-1-tests.hpp"
+#include "tarea1.hpp"
 
 using namespace std;
 
@@ -16,12 +16,11 @@ int main(int argc, char **argv) {
 };
 
 // Este test checkea que un nodo tenga la estructura correcta de M-Tree,
-//es decir, numero correcto de entradas por nodo y que esté valanceado.
+// es decir, numero correcto de entradas por nodo y que esté valanceado.
 void test_estrucutra_correcta(Nodo &arbol) {}
 
 // Este test checkea que los radios de las entradas esten correctos.
 void test_puntos_correctos(Nodo &arbol, Conjunto &puntos) {}
-
 
 Conjunto *generar_conjunto_puntos(int cantidad) {
     Conjunto *resultado = new Conjunto(cantidad);
@@ -53,4 +52,3 @@ vector<Query> *generar_conjunto_queries(int cantidad) {
 void eliminar_conjunto_queries(vector<Query> *queries) {
     delete queries;
 }
-

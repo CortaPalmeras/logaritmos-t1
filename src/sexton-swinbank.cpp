@@ -1,4 +1,6 @@
+
 #include <cmath>
+#include <cstddef>
 #include <limits>
 #include <map>
 #include <random>
@@ -49,36 +51,157 @@ void elegir_medoide(Conjunto c_in, map<Conjunto, Punto> &medoide) {
     }
     medoide[c_in] = candidato;
 }
+
+
 // Tener en cuenta que en dosConjutnos resultado en la variable Conjunto a debe estar el mayor conjunto
 void elegirParesCercanos(Particion c, map<Conjunto, Punto> medoide,
                          map<Conjunto, int> tamaño_conjuntos, dosConjuntos &resultado) {
     int tamaño = c.size();
     double distancia_candidata = numeric_limits<double>::max();
+
     for (int i = 0; i < tamaño; i++) {
         for (int j = 0; j < tamaño; j++) {
-            double distancia_actual;
-            if (i == j) {
-                continue;
-            } else {
-                if (tamaño_conjuntos[c[i]] >= tamaño_conjuntos[c[j]]) {
-                    distancia_actual = distancia(medoide[c[i]], medoide[c[j]]);
-                    if (distancia_candidata > distancia_actual) {
-                        resultado.a = c[i];
-                        resultado.b = c[j];
-                        resultado.indiceA = i;
-                        resultado.indiceB = j;
-                        distancia_candidata = distancia_actual;
-                    }
+
+            if (i != j && tamaño_conjuntos[c[i]] >= tamaño_conjuntos[c[j]]) {
+                double distancia_actual = distancia(medoide[c[i]], medoide[c[j]]);
+
+                if (distancia_candidata > distancia_actual) {
+                    resultado.a = c[i];
+                    resultado.b = c[j];
+                    resultado.indiceA = i;
+                    resultado.indiceB = j;
+                    distancia_candidata = distancia_actual;
                 }
             }
         }
     }
 }
 
-dosConjuntos MinMaxSplit(Conjunto particionar) {
+// Función potencialmente inutil, la escribi y despues me di cuenta de que no servía.
+double radio_cobertor(Conjunto &a, Conjunto &b, int indice) {
+    double r_max = numeric_limits<double>::min();
 
+    for (int i = 0; i < a.size(); i++) {
+        if (i != indice) {
+            double r_candidato = distancia(a[indice], a[i]);
+            r_max = r_max > r_candidato ? r_max : r_candidato;
+        }
+    }
+
+    for (int i = 0; i < b.size(); i++) {
+        if (i != indice) {
+            double r_candidato = distancia(a[indice], b[i]);
+            r_max = r_max > r_candidato ? r_max : r_candidato;
+        }
+    }
+
+    return r_max;
 }
 
+typedef struct dll {
+    int indice = 0;
+    dll *siguiente = NULL;
+    dll *previo = NULL;
+} doubly_linked_list;
+
+void MinMaxSplit(Conjunto &puntos, Conjunto **out1, Conjunto **out2) {
+    double r_min = numeric_limits<double>::max();
+
+    // calcular distancias entre todos los puntos,
+    // para que no se calculen más de una vez en la función.
+    vector< vector<double> > d(puntos.size(), vector<double>(puntos.size()));
+
+    for (int i = 0; i < puntos.size(); i++) {
+        d[i][i] = 0;
+
+        for (int j = i + 1; j < puntos.size(); j++) {
+            double dist = distancia(puntos[i], puntos[j]);
+            d[i][j] = dist;
+            d[j][i] = dist;
+        }
+    }
+
+
+    // para cada par de puntos:
+    for (int i = 0; i < puntos.size(); i++) {
+        for (int j = i + 1; j < puntos.size(); j++) {
+
+            // se crean dos listas doblemente enlazadas de puntos ordenados 
+            // en relación a su distancia con los dos puntos elegidos.
+            doubly_linked_list cola_distancias1[puntos.size()];
+            doubly_linked_list cola_distancias2[puntos.size()];
+
+            doubly_linked_list *primero1 = cola_distancias1;
+            doubly_linked_list *primero2 = cola_distancias2;
+
+            // Se van añadiendo los indices de los puntos uno por uno a las colas
+            for (int n = 0; n < puntos.size(); n++) {
+                if (n == i || n == j) continue;
+
+                cola_distancias1[n].indice = n;
+                cola_distancias2[n].indice = n;
+
+                bool falta1 = true;
+                bool falta2 = true;
+
+                // Caso en el quel la distancia con un punto 
+                // sea menor que la del primer punto de la cola:
+                if (d[i][n] < d[i][primero1->indice]) {
+                    primero1->previo = cola_distancias1 + n;
+                    cola_distancias1[n].siguiente = primero1;
+                    primero1 = cola_distancias1 + n;
+                    falta1 = false;
+                }
+
+                if (d[j][n] < d[j][primero2->indice]) {
+                    primero2->previo = cola_distancias1 + n;
+                    cola_distancias2[n].siguiente = primero1;
+                    primero2 = cola_distancias1 + n;
+                    falta2 = false;
+                }
+                
+                doubly_linked_list *nodo_actual = primero1->siguiente;
+
+                // se avanza por las colas hasta encontrar donde debe ir el punto n.
+                while (falta1) {
+                    if (d[i][n] < d[i][nodo_actual->indice]) {
+                        nodo_actual->previo->siguiente = cola_distancias1 + n;
+                        nodo_actual->previo = cola_distancias1 + n;
+                        cola_distancias1[n].siguiente = nodo_actual;
+                        falta1 = false;
+
+                    } else if (nodo_actual->siguiente == NULL) {
+                        nodo_actual->siguiente = cola_distancias1 + n;
+                        nodo_actual = cola_distancias1 + n;
+                        falta1 = false;
+
+                    } else {
+                        nodo_actual = nodo_actual->siguiente;
+                    }
+                }
+
+                nodo_actual = primero2->siguiente;
+
+                while (true) {
+                    if (d[j][n] < d[j][nodo_actual->indice]) {
+                        nodo_actual->previo->siguiente = cola_distancias2 + n;
+                        nodo_actual->previo = cola_distancias2 + n;
+                        cola_distancias2[n].siguiente = nodo_actual;
+                        falta2 = false;
+
+                    } else if (nodo_actual->siguiente == NULL) {
+                        nodo_actual->siguiente = cola_distancias2 + n;
+                        nodo_actual = cola_distancias2 + n;
+                        falta2 = false;
+
+                    } else {
+                        nodo_actual = nodo_actual->siguiente;
+                    }
+                }
+            }
+        }
+    }
+}
 
 
 vector<Conjunto> crear_clusters(Conjunto &c_in) {
@@ -87,11 +210,13 @@ vector<Conjunto> crear_clusters(Conjunto &c_in) {
     Particion c;
     map<Conjunto, Punto> medoide;
     map<Conjunto, int> tamaño_conjuntos;
+
     for (int i = 0; i < tamaño; i++) {
         c[i].push_back(c_in[i]);
         medoide[c[i]] = c_in[i];
         tamaño_conjuntos[c[i]] = 1;
     }
+
     while (c.size() > 1) {
         dosConjuntos par;
         elegirParesCercanos(c, medoide, tamaño_conjuntos, par);
@@ -111,6 +236,7 @@ vector<Conjunto> crear_clusters(Conjunto &c_in) {
             c_out.push_back(par.a);
         }
     }
+
     Conjunto cPrima;
     while (c_out.size() > 0) {
         int tamaño_c = c_out.size();
@@ -126,7 +252,9 @@ vector<Conjunto> crear_clusters(Conjunto &c_in) {
             }
         }
     }
+
     Conjunto union1 = c.insert(c.end(), cPrima.begin(), cPrima.end());
+
     if (c.size() + cPrima.size() <= B) {
         c_out.insert(c_out.end(), union1.begin(), union1.end());
     } else {
@@ -136,5 +264,6 @@ vector<Conjunto> crear_clusters(Conjunto &c_in) {
         c_out.insert(c_out.end(), c1.begin(), c1.end());
         c_out.insert(c_out.end(), c2.begin(), c2.end());
     }
+
     return c_out;
 }

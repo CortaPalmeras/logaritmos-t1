@@ -9,7 +9,7 @@
 // Recibe un arbol y una query y añade los puntos de la query
 // al conjunto de puntos especificado en el tercer argumento.
 //
-// Retorna el numero de accesos a disco, calculado como la 
+// Retorna el numero de accesos a disco, calculado como la
 // cantidad de nodos que se leen.
 int busqueda(Nodo &arbol, Query &consulta, Conjunto &puntos) {
     int accesos = 1;

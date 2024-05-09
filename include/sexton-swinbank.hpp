@@ -10,4 +10,3 @@ std::vector<Conjunto> crear_clusters(Conjunto &puntos);
 Entry output_hoja(Conjunto &puntos);
 
 Entry output_interno(std::vector<Entry> &tuplas);
-

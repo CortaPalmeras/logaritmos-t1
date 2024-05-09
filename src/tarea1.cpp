@@ -39,7 +39,6 @@ int altura_arbol(Nodo const &arbol) {
     }
 }
 
-
 std::mt19937 rdg(GLOBAL_RANDOM_SEED);
 std::uniform_real_distribution<double> dist_double(
     std::numeric_limits<double>::min(), std::numeric_limits<double>::max());
