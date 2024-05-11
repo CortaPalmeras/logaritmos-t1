@@ -23,42 +23,39 @@ using namespace std;
     cout << "Paso: 1" << endl; \
     auto t = TIEMPO_ACTUAL;
 
-#define TIMEAR_PASO(paso) \
+#define INICIAR_PASO(paso) \
     cout << "Paso: " << paso << " " << (TIEMPO_ACTUAL - t).count() << endl;
 
 #else
 
 #define TIEMPO_ACTUAL
 #define INICIAR_TIEMPO
-#define TIMEAR_PASO(paso)
+#define INICIAR_PASO(paso)
 
 #endif
 
 // Algoritmo de Ciaccia - Patella
 Nodo *ciaccia_patella(Conjunto const &p_in) {
-paso_1:
+
     INICIAR_TIEMPO
     if (p_in.size() < B) {
-        Nodo *T = crear_nodo();
-        for (auto p : p_in) {
-            anadir_entrada(T, p);
-        }
-        return T;
+        return crear_nodo(p_in);
     }
 
-paso_2:
-    TIMEAR_PASO(2)
+
+    paso_2:
+    INICIAR_PASO(2)
     int k = p_in.size() / B;
     k = k == 1 ? 2 : k;
     k = k < B ? k : B;
     Conjunto *F = random_sample(p_in, k);
 
-paso_3:
-    TIMEAR_PASO(3)
+
+    INICIAR_PASO(3)
     Particion *particion = crear_particion(p_in, *F);
 
-paso_4:
-    TIMEAR_PASO(4)
+
+    INICIAR_PASO(4)
     for (int i = 0, fin = particion->size(); i < fin;) {
         if ((*particion)[i].size() < b) {
             // Se guardan los puntos que se deben redistribuir.
@@ -77,24 +74,24 @@ paso_4:
         }
     }
 
-paso_5:
-    TIMEAR_PASO(5)
+    
+    INICIAR_PASO(5)
     if (F->size() <= 1) {
         delete F;
         delete particion;
         goto paso_2;
     }
 
-paso_6:
-    TIMEAR_PASO(6)
+
+    INICIAR_PASO(6)
     vector<Nodo *> arboles(particion->size());
-    for (int i = 0; i < particion->size(); i++) {
+    for (uint i = 0; i < particion->size(); i++) {
         arboles[i] = ciaccia_patella((*particion)[i]);
     }
     delete particion;
 
-paso_7:
-    TIMEAR_PASO(7)
+
+    INICIAR_PASO(7)
     for (int i = 0, fin = arboles.size(); i < fin;) {
         Nodo *arbol = arboles[i];
 
@@ -127,21 +124,22 @@ paso_7:
         }
     }
 
-paso_8:
-    TIMEAR_PASO(8)
+
+    INICIAR_PASO(8)
     int h_minima = numeric_limits<int>::max();
     vector<int> alturas(arboles.size());
 
-    for (int i = 0; i < arboles.size(); i++) {
+    for (uint i = 0; i < arboles.size(); i++) {
         alturas[i] = altura_arbol(*arboles[i]);
         h_minima = h_minima < alturas[i] ? h_minima : alturas[i];
     }
 
-paso_9:
-    TIMEAR_PASO(9)
+
+    INICIAR_PASO(9)
     map<Punto, Nodo *> balanceamiento;
     Conjunto F_balanceamiento;
-    for (int i = 0; i < arboles.size(); i++) {
+
+    for (uint i = 0; i < arboles.size(); i++) {
         if (alturas[i] == h_minima) {
             balanceamiento[(*F)[i]] = arboles[i];
             F_balanceamiento.push_back((*F)[i]);
@@ -151,20 +149,20 @@ paso_9:
     }
     delete F;
 
-paso_10:
-    TIMEAR_PASO(10)
+
+    INICIAR_PASO(10)
     Nodo *T_superior = ciaccia_patella(F_balanceamiento);
 
-paso_11:
-    TIMEAR_PASO(11)
+
+    INICIAR_PASO(11)
     unir_subarboles(T_superior, balanceamiento);
 
-paso_12:
-    TIMEAR_PASO(12)
+
+    INICIAR_PASO(12)
     // asignar_distancias_arbol(*T_superior);
 
-paso_13:
-    TIMEAR_PASO(13)
+
+    INICIAR_PASO(13)
     return T_superior;
 }
 
@@ -193,15 +191,15 @@ Particion *crear_particion(Conjunto const &puntos, Conjunto const &samples) {
 }
 
 void asignar_puntos_a_samples(Conjunto const &puntos, Conjunto const &samples, Particion &particion) {
-    for (int i = 0; i < puntos.size(); i++) {
-        int indice_sample_mas_cercano;
-        double distancia_minima = numeric_limits<double>::max();
+    for (uint i = 0; i < puntos.size(); i++) {
+        int indice_sample_mas_cercano = 0;
+        double d_minima = numeric_limits<double>::max();
 
-        for (int j = 0; j < samples.size(); j++) {
-            double distancia_candidata = distancia(puntos[i], samples[j]);
+        for (uint j = 0; j < samples.size(); j++) {
+            double d_candidata = distancia(puntos[i], samples[j]);
 
-            if (distancia_minima > distancia_candidata) {
-                distancia_minima = distancia_candidata;
+            if (d_minima > d_candidata) {
+                d_minima = d_candidata;
                 indice_sample_mas_cercano = j;
             }
         }
@@ -210,12 +208,15 @@ void asignar_puntos_a_samples(Conjunto const &puntos, Conjunto const &samples, P
     }
 }
 
-void extraer_subarboles(Nodo *arbol, map<Punto, Nodo *> &raices, Conjunto &puntos, int dif) {
+// Función que extrae todos los sub arboles de tamaño h de un arbol que se asume que es 
+// de mayor tamaño, los 
+void extraer_subarboles(Nodo *arbol, map<Punto, Nodo*> &raices, Conjunto &puntos, int dif) {
     if (dif == 1) {
         for (int i = 0; i < arbol->size; i++) {
             raices[arbol->entradas[i].p] = arbol->entradas[i].a;
             puntos.push_back(arbol->entradas[i].p);
         }
+
     } else {
         for (int i = 0; i < arbol->size; i++) {
             extraer_subarboles(arbol->entradas[i].a, raices, puntos, dif - 1);
@@ -252,7 +253,6 @@ void asignar_distancias_entrada(Entry &entrada) {
 
     if (nodo.entradas[0].a == NULL) {
         double d_maxima = numeric_limits<int>::min();
-        punto punto_lejano;
 
         for (int i = 0; i < nodo.size; i++) {
             double d_candidata = distancia(entrada.p, nodo.entradas[i].p);

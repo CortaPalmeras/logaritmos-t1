@@ -1,2 +1,6 @@
--I
-include
+-Iinclude
+-fsanitize=address
+-Wall
+-Wextra
+-Werror
+-O3

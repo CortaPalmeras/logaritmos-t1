@@ -10,45 +10,81 @@
 
 using namespace std;
 
-typedef struct {
-    Conjunto a;
-    Conjunto b;
-    int indiceA;
-    int indiceB;
-} dosConjuntos;
 
-void elegir_medoide(Conjunto c_in, map<Conjunto, Punto> &medoide) {
-    int tamaño = c_in.size();
-    map<Punto, int> candidatos;
+Nodo *sexton_swinbank(Conjunto &c_in) {
+    if (c_in.size() <= B) {
+        Entry entrada = output_hoja(c_in);
+        return entrada.a;
+    }
 
-    for (int i = 0; i < tamaño; i++) {
-        double distancia_maxima = 0;
-
-        for (int j = 0; j < tamaño; j++) {
-            if (i != j) {
-                double distancia_actual = distancia(c_in[i], c_in[j]);
-                if (distancia_actual > distancia_maxima) {
-                    distancia_maxima = distancia_actual;
+    vector<Conjunto> c_out = crear_clusters(c_in);
+    vector<Entry> c;
+    for (uint i = 0; i < c_out.size(); i++) {
+        c.push_back(output_hoja(c_out[i]));
+    }
+    while (c.size() > B) {
+        Conjunto c_in;
+        for (uint i = 0; i < c.size(); i++) {
+            c_in.push_back(c[i].p);
+        }
+        c_out = crear_clusters(c_in);
+        vector<vector<Entry>> c_mra;
+        for (int i = 0; i < c_out.size(); i++) {
+            vector<Entry> s;
+            for (int j = 0; j < c.size(); j++) {
+                Entry entrada;
+                entrada.p = c[j].p;
+                entrada.a = c[j].a;
+                entrada.r = c[j].r;
+                for (int k = 0; k < c_out.size(); k++) {
+                    if (entrada.p.x == c_out[i][k].x && entrada.p.y == c_out[i][k].y) {
+                        s.push_back(entrada);
+                        break;
+                    }
                 }
             }
+            c_mra.push_back(s);
         }
-        candidatos[c_in[i]] = distancia_maxima;
-    }
-    Punto candidato;
-    for (int i = 0; i < tamaño; i++) {
-        int candidato_anterior;
-        int candidato_actual = candidatos[c_in[i]];
-        if (i == 0) {
-            candidato_anterior = candidatos[c_in[i]];
-            candidato = c_in[0];
-            continue;
-        } else {
-            if (candidato_actual > candidato_anterior) {
-                candidato = c_in[i];
-            }
+        vector<Entry> a;
+        c = a;
+        for (int i = 0; i < c_mra.size(); i++) {
+            c.push_back(output_interno(c_mra[i]));
         }
     }
-    medoide[c_in] = candidato;
+    Entry entrada1 = output_interno(c);
+    return entrada1.a;
+}
+
+typedef struct medoide {
+    int indice;
+    double radio_cobertor;
+} Medoide;
+
+Medoide elegir_medoide(Conjunto &puntos) {
+    vector<double> r_max(puntos.size(), 0);
+    // Itera por todos los pared distintos de puntos, seteando por cada uno 
+    // su maximo radio, así hallando todos los radios cobertores.
+    for (uint i = 0; i < puntos.size(); i++) {
+        for (uint j = i + 1; j < puntos.size(); j++) {
+            double r_cand = distancia(puntos[i], puntos[j]);
+
+            if (r_max[i] < r_cand) r_max[i] = r_cand;
+            if (r_max[j] < r_cand) r_max[j] = r_cand;
+        }
+    }
+
+    // Se itera por todos los radios cobertores para encontrar el mínimo.
+    double r_min = numeric_limits<double>::max();
+    int i_min = 0;
+    for (uint i = 0; i < puntos.size(); i++) {
+        if (r_min > r_max[i]) {
+            r_min = r_max[i];
+            i_min = i;
+        }
+    }
+
+    // Se retorna el indice del medoide encontrado.
+    return {i_min, r_min};
 }
 
 // Tener en cuenta que en dosConjutnos resultado en la variable Conjunto a debe estar el mayor conjunto
@@ -139,27 +175,20 @@ vector<Conjunto> crear_clusters(Conjunto &c_in) {
     return c_out;
 }
 
-Entry OutPutHoja(Conjunto &c_in) {
-    Entry resultado;
-    Nodo c;
-    map<Conjunto, Punto> medoide;
-    elegir_medoide(c_in, medoide);
-    Punto medoide_primario = medoide[c_in];
-    resultado.p = medoide_primario;
-    double r = 0;
-    for (int i = 0; i < c_in.size(); i++) {
-        Entry entrada;
-        entrada.p = c_in[i];
-        entrada.a = NULL;
-        entrada.r = 0;
-        c.entradas[i] = entrada;
-        r = max(r, distancia(medoide_primario, entrada.p));
+void crear_nodo()
+
+Entry output_hoja(Conjunto &c_in) {
+    Medoide medoide = elegir_medoide(c_in);
+
+    Nodo *c = new Nodo;
+    for (uint i = 0; i < c_in.size(); i++) {
+        añadir_entrada(c, c_in[i]);
     }
-    resultado.r = r;
-    resultado.a = &c;
+
+    return {c_in[medoide.indice], medoide.radio_cobertor, c};
 }
 
-Entry OutPutInterno(vector<Entry> c_mra) {
+Entry *output_interno(vector<Entry> &c_mra) {
     vector<Punto> c_in;
     Entry resultado;
     Nodo c;
@@ -181,45 +210,3 @@ Entry OutPutInterno(vector<Entry> c_mra) {
     return resultado;
 }
 
-Nodo sexton_swinbank(Conjunto c_in) {
-    if (c_in.size() <= B) {
-        Entry entrada = OutPutHoja(c_in);
-        return *(entrada.a);
-    }
-    vector<Conjunto> c_out = crear_clusters(c_in);
-    vector<Entry> c;
-    for (int i = 0; i < c_out.size(); i++) {
-        c.push_back(OutPutHoja(c_out[i]));
-    }
-    while (c.size() > B) {
-        Conjunto c_in;
-        for (int i = 0; i < c.size(); i++) {
-            c_in.push_back(c[i].p);
-        }
-        c_out = crear_clusters(c_in);
-        vector<vector<Entry>> c_mra;
-        for (int i = 0; i < c_out.size(); i++) {
-            vector<Entry> s;
-            for (int j = 0; j < c.size(); j++) {
-                Entry entrada;
-                entrada.p = c[j].p;
-                entrada.a = c[j].a;
-                entrada.r = c[j].r;
-                for (int k = 0; k < c_out.size(); k++) {
-                    if (entrada.p.x == c_out[i][k].x && entrada.p.y == c_out[i][k].y) {
-                        s.push_back(entrada);
-                        break;
-                    }
-                }
-            }
-            c_mra.push_back(s);
-        }
-        vector<Entry> a;
-        c = a;
-        for (int i = 0; i < c_mra.size(); i++) {
-            c.push_back(OutPutInterno(c_mra[i]));
-        }
-    }
-    Entry entrada1 = OutPutInterno(c);
-    return *entrada1.a
-}

@@ -55,7 +55,9 @@ inline double distancia(Punto const &a, Punto const &b) {
 
 Nodo *crear_nodo();
 
-void anadir_entrada(Nodo *n, Punto p);
+Nodo *crear_nodo(Conjunto const &puntos);
+
+void añadir_entrada(Nodo *n, Punto p);
 
 int altura_arbol(Nodo const &arbol);
 

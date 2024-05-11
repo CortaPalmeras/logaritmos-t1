@@ -5,10 +5,10 @@ UseTab: Never
 IndentWidth: 4
 TabWidth: 4
 ColumnLimit: 0
-AccessModifierOffset: -2
+AccessModifierOffset: 0
 
 AllowShortFunctionsOnASingleLine: Empty
-AllowShortIfStatementsOnASingleLine: false
-AllowShortLoopsOnASingleLine: false
+AllowShortIfStatementsOnASingleLine: AllIfsAndElse
+AllowShortLoopsOnASingleLine: true
 AlwaysBreakTemplateDeclarations: true
-
+IndentGotoLabels: true

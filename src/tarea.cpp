@@ -11,9 +11,18 @@ Nodo *crear_nodo() {
     return n;
 }
 
-void anadir_entrada(Nodo *n, Punto p) {
+Nodo *crear_nodo(Conjunto &puntos) {
+    Nodo *n = new Nodo;
+    n->size = 0;
+    for (auto p : puntos) {
+        añadir_entrada(n, p);
+    }
+    return n;
+}
+
+void añadir_entrada(Nodo *n, Punto p) {
     if (n->size >= B) {
-        std::cout << "nodo sobrepasa el tamaño máximo en 'anadir_entrada'\n";
+        std::cout << "nodo sobrepasa el tamaño máximo en 'añadir_entrada'\n";
         exit(1);
     }
     int s = n->size;

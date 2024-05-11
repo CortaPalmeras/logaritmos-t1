@@ -1,14 +1,26 @@
 
 #include <vector>
+#include <map>
 
 #include "tarea.hpp"
 
+typedef struct {
+    Conjunto a;
+    Conjunto b;
+    int indiceA;
+    int indiceB;
+} dosConjuntos;
+
 Nodo *sexton_swinbank(Conjunto &puntos);
 
-std::vector<Conjunto> crear_clusters(Conjunto &puntos);
+void elegir_medoide(Conjunto &c_in, std::map<Conjunto, Punto> &medoide);
 
-Entry output_hoja(Conjunto &puntos);
+void elegirParesCercanos(Particion c, std::map<Conjunto, Punto> medoide,
+                         std::map<Conjunto, int> tamaño_conjuntos, dosConjuntos &resultado);
 
-Entry output_interno(std::vector<Entry> &tuplas);
+std::vector<Conjunto> crear_clusters(Conjunto &c_in);
 
-void minmax_split(Conjunto &puntos, Conjunto **out1, Conjunto **out2);
+Entry OutPutHoja(Conjunto &c_in);
+
+Entry OutPutInterno(std::vector<Entry> c_mra);
+

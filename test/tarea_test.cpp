@@ -23,6 +23,18 @@ int test_estrucutra_correcta_recur(Nodo *arbol) {
     return h + 1;
 }
 
+void extraer_puntos(Nodo &arbol, set<Punto> &arbol_set) {
+    if (arbol.entradas[0].a == NULL) {
+        for (int i = 0; i < arbol.size; i++) {
+            arbol_set.insert(arbol.entradas[i].p);
+        }
+    } else {
+        for (int i = 0; i < arbol.size; i++) {
+            extraer_puntos(*arbol.entradas[i].a, arbol_set);
+        }
+    }
+}
+
 // Este test checkea que un nodo tenga la estructura correcta de M-Tree,
 // es decir, numero correcto de entradas por nodo y que esté valanceado.
 void test_estrucutra_correcta(Nodo &arbol) {
@@ -39,6 +51,11 @@ void test_estrucutra_correcta(Nodo &arbol) {
 // en un M-Tree
 void test_puntos_correctos(Nodo &arbol, Conjunto &puntos) {
     set<Punto> punto_set(puntos.begin(), puntos.end());
+    set<Punto> arbol_set(puntos.begin(), puntos.end());
+
+    extraer_puntos(arbol, arbol_set);
+
+    assert(arbol_set == punto_set);
 }
 
 Conjunto *generar_conjunto_puntos(int cantidad) {

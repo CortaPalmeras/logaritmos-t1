@@ -46,35 +46,30 @@ ss_depends := $(t1_depends) $(ss_files) $(ss_head)
 mm_depends := $(t1_depends) $(mm_files) $(mm_head)
 bu_depends := $(t1_depends) $(bu_files) $(bu_head)
 
-CPPFLAGS := -Iinclude
+CPPFLAGS := -Iinclude -Wall -Wextra -Werror
+
+ifdef debug
+	CPPFLAGS += -g
+else ifdef san
+	CPPFLAGS += -fsanitize=address
+else
+	CPPFLAGS += -O3
+endif
 
 # Crear binarios para el metodo de Ciaccia-Patella
 $(cp): $(cp_bin)
 	$(cp_bin)
 
 $(cp_bin): $(cp_depends)
-	g++ $(CPPFLAGS) -o $(cp_files)
+	$(CXX) $(CPPFLAGS) $(cp_files) -o $(cp_bin)
 
 # Crear binarios para el metodo de Sexton-Swinbank
-$(ss): $(ss_bin)
-	$(ss_bin)
-
-$(ss_bin): $(ss_depends)
-	g++ $(CPPFLAGS) -o $(ss_files)
 
 # Crear binarios para la función min-max split
-$(mm): $(mm_bin)
-	$(mm_bin)
-
-$(mm_bin): $(mm_depends)
-	g++ $(CPPFLAGS) -o $(mm_files)
-
-clean:
-	rm $(output_dir)/*
 
 format:
 	clang-format -i $(source_dir)/* $(header_dir)/* $(test_dir)/*
 
-
-
+clean:
+	rm $(output_dir)/*
 

@@ -17,13 +17,13 @@ typedef struct doubly_linked_list {
     doubly_linked_list *previo = NULL;
 } dll;
 
-inline void añadir_primero(dll **primero, dll *nodo) {
+void añadir_primero(dll **primero, dll *nodo) {
     (*primero)->previo = nodo;
     nodo->siguiente = *primero;
     *primero = nodo;
 }
 
-inline void añadir_antes(dll *nodo_actual, dll *nodo) {
+void añadir_antes(dll *nodo_actual, dll *nodo) {
     nodo->previo = nodo_actual->previo;
     nodo->siguiente = nodo_actual;
 
@@ -31,9 +31,9 @@ inline void añadir_antes(dll *nodo_actual, dll *nodo) {
     nodo_actual->previo = nodo;
 }
 
-inline void añadir_nodo(dll **primero, dll *nodo, mat_distancias &d, int i, int n) {
+void añadir_nodo(dll **primero, dll *nodo, mat_distancias &d, int i, int n) {
 
-    // Caso en el quel la distancia con un punto
+    // Caso en el que la distancia con un punto
     if (d[i][n] < d[i][(*primero)->indice]) {
         añadir_primero(primero, nodo);
         return;
@@ -57,7 +57,7 @@ inline void añadir_nodo(dll **primero, dll *nodo, mat_distancias &d, int i, int
     }
 }
 
-inline void eliminar_nodo(dll *nodo, dll **primero) {
+void eliminar_nodo(dll *nodo, dll **primero) {
     if (nodo == *primero) {
         *primero = nodo->siguiente;
     } else if (nodo->siguiente == NULL) {
@@ -75,10 +75,10 @@ void minmax_split(Conjunto &puntos, Conjunto **out1, Conjunto **out2) {
     // para que no se calculen más de una vez en la función.
     mat_distancias distancias(puntos.size(), vector<double>(puntos.size()));
 
-    for (int i = 0; i < puntos.size(); i++) {
+    for (uint i = 0; i < puntos.size(); i++) {
         distancias[i][i] = 0;
 
-        for (int j = i + 1; j < puntos.size(); j++) {
+        for (uint j = i + 1; j < puntos.size(); j++) {
             double dist = distancia(puntos[i], puntos[j]);
             distancias[i][j] = dist;
             distancias[j][i] = dist;
@@ -86,18 +86,18 @@ void minmax_split(Conjunto &puntos, Conjunto **out1, Conjunto **out2) {
     }
 
     // para cada par de puntos:
-    for (int i = 0; i < puntos.size(); i++) {
-        for (int j = i + 1; j < puntos.size(); j++) {
+    for (uint i = 0; i < puntos.size(); i++) {
+        for (uint j = i + 1; j < puntos.size(); j++) {
             // se crean dos listas doblemente enlazadas de puntos ordenados
             // en relación a su distancia con los dos puntos elegidos.
-            dll cola_distancias1[puntos.size()];
-            dll cola_distancias2[puntos.size()];
+            dll *cola_distancias1 = new dll[puntos.size()];
+            dll *cola_distancias2 = new dll[puntos.size()];
 
             dll *primero1 = cola_distancias1;
             dll *primero2 = cola_distancias2;
 
             // Se van añadiendo los indices de los puntos uno por uno a las listas
-            for (int n = 0; n < puntos.size(); n++) {
+            for (uint n = 0; n < puntos.size(); n++) {
                 if (n == i || n == j)
                     continue;
 
