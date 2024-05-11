@@ -4,14 +4,40 @@
 #include <map>
 #include <vector>
 
-#include "ciaccia-patella.hpp"
-#include "tarea1.hpp"
+#include "ciaccia_patella.hpp"
+#include "tarea.hpp"
 
 using namespace std;
+
+#define TIMEAR 0
+
+#if TIMEAR
+
+#include <chrono>
+#include <iostream>
+
+#define TIEMPO_ACTUAL \
+    chrono::high_resolution_clock::now()
+
+#define INICIAR_TIEMPO         \
+    cout << "Paso: 1" << endl; \
+    auto t = TIEMPO_ACTUAL;
+
+#define TIMEAR_PASO(paso) \
+    cout << "Paso: " << paso << " " << (TIEMPO_ACTUAL - t).count() << endl;
+
+#else
+
+#define TIEMPO_ACTUAL
+#define INICIAR_TIEMPO
+#define TIMEAR_PASO(paso)
+
+#endif
 
 // Algoritmo de Ciaccia - Patella
 Nodo *ciaccia_patella(Conjunto const &p_in) {
 paso_1:
+    INICIAR_TIEMPO
     if (p_in.size() < B) {
         Nodo *T = crear_nodo();
         for (auto p : p_in) {
@@ -21,14 +47,18 @@ paso_1:
     }
 
 paso_2:
+    TIMEAR_PASO(2)
     int k = p_in.size() / B;
+    k = k == 1 ? 2 : k;
     k = k < B ? k : B;
     Conjunto *F = random_sample(p_in, k);
 
 paso_3:
+    TIMEAR_PASO(3)
     Particion *particion = crear_particion(p_in, *F);
 
 paso_4:
+    TIMEAR_PASO(4)
     for (int i = 0, fin = particion->size(); i < fin;) {
         if ((*particion)[i].size() < b) {
             // Se guardan los puntos que se deben redistribuir.
@@ -48,6 +78,7 @@ paso_4:
     }
 
 paso_5:
+    TIMEAR_PASO(5)
     if (F->size() <= 1) {
         delete F;
         delete particion;
@@ -55,6 +86,7 @@ paso_5:
     }
 
 paso_6:
+    TIMEAR_PASO(6)
     vector<Nodo *> arboles(particion->size());
     for (int i = 0; i < particion->size(); i++) {
         arboles[i] = ciaccia_patella((*particion)[i]);
@@ -62,6 +94,7 @@ paso_6:
     delete particion;
 
 paso_7:
+    TIMEAR_PASO(7)
     for (int i = 0, fin = arboles.size(); i < fin;) {
         Nodo *arbol = arboles[i];
 
@@ -95,6 +128,7 @@ paso_7:
     }
 
 paso_8:
+    TIMEAR_PASO(8)
     int h_minima = numeric_limits<int>::max();
     vector<int> alturas(arboles.size());
 
@@ -104,6 +138,7 @@ paso_8:
     }
 
 paso_9:
+    TIMEAR_PASO(9)
     map<Punto, Nodo *> balanceamiento;
     Conjunto F_balanceamiento;
     for (int i = 0; i < arboles.size(); i++) {
@@ -117,15 +152,19 @@ paso_9:
     delete F;
 
 paso_10:
+    TIMEAR_PASO(10)
     Nodo *T_superior = ciaccia_patella(F_balanceamiento);
 
 paso_11:
+    TIMEAR_PASO(11)
     unir_subarboles(T_superior, balanceamiento);
 
 paso_12:
-    asignar_distancias_arbol(*T_superior);
+    TIMEAR_PASO(12)
+    // asignar_distancias_arbol(*T_superior);
 
 paso_13:
+    TIMEAR_PASO(13)
     return T_superior;
 }
 

@@ -3,11 +3,10 @@
 #include <cstddef>
 #include <limits>
 #include <map>
-#include <random>
 #include <vector>
 
-#include "sexton-swinbank.hpp"
-#include "tarea1.hpp"
+#include "sexton_swinbank.hpp"
+#include "tarea.hpp"
 
 using namespace std;
 
@@ -130,7 +129,7 @@ vector<Conjunto> crear_clusters(Conjunto &c_in) {
     if (c.size() + cPrima.size() <= B) {
         c_out.insert(c_out.end(), union1.begin(), union1.end());
     } else {
-        dosConjuntos par = MinMaxSplit(union1);
+        min_max_split();
         Conjunto c1 = par.a;
         Conjunto c2 = par.b;
         c_out.insert(c_out.end(), c1.begin(), c1.end());

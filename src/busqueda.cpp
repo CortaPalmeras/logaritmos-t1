@@ -2,7 +2,7 @@
 #include <cmath>
 
 #include "busqueda.hpp"
-#include "tarea1.hpp"
+#include "tarea.hpp"
 
 // Algoritmo de busqueda especificado en el enunciado.
 //

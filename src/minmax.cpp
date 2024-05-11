@@ -4,8 +4,8 @@
 #include <limits>
 #include <vector>
 
-#include "sexton-swinbank.hpp"
-#include "tarea1.hpp"
+#include "sexton_swinbank.hpp"
+#include "tarea.hpp"
 
 using namespace std;
 

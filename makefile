@@ -1,35 +1,80 @@
 
+t1 := tarea
+cp := ciaccia_patella
+ss := sexton_swinbank
+mm := minmax
+bu := busqueda
+
 output_dir := ./bin
-output_file := $(output_dir)/test
-output_file_clang := $(output_file)_clang
+cp_bin := $(output_dir)/$(cp)
+ss_bin := $(output_dir)/$(ss)
+mm_bin := $(output_dir)/$(mm)
+bu_bin := $(output_dir)/$(bu)
 
 source_dir := ./src
-source_files := $(shell echo $(source_dir)/*.cpp)
+t1_src := $(source_dir)/$(t1).cpp
+cp_src := $(source_dir)/$(cp).cpp
+ss_src := $(source_dir)/$(ss).cpp
+mm_src := $(source_dir)/$(mm).cpp
+bu_src := $(source_dir)/$(bu).cpp
 
 header_dir := ./include
-header_files := $(shell echo $(header_dir)/*.hpp)
+t1_head := $(header_dir)/$(t1).hpp
+cp_head := $(header_dir)/$(cp).hpp
+ss_head := $(header_dir)/$(ss).hpp
+mm_head := $(header_dir)/$(mm).hpp
+bu_head := $(header_dir)/$(bu).hpp
 
 test_dir := ./test
-test_files := $(shell echo $(test_dir)/*.cpp)
-test_header_files := $(shell echo $(test_dir)/*.hpp)
+t1_test := $(test_dir)/$(t1)_test.cpp
+cp_test := $(test_dir)/$(cp)_test.cpp
+ss_test := $(test_dir)/$(ss)_test.cpp
+mm_test := $(test_dir)/$(mm)_test.cpp
+bu_test := $(test_dir)/$(bu)_test.cpp
+
+test_head := $(test_dir)/$(t1)_test.hpp
+
+t1_files := $(t1_test) $(t1_src)
+cp_files := $(t1_files) $(cp_test) $(cp_src) 
+mm_files := $(t1_files) $(mm_test) $(mm_src) 
+ss_files := $(t1_files) $(ss_test) $(ss_src) $(mm_src)
+bu_files := $(t1_files) $(bu_test) $(bu_src) $(cp_src) $(ss_src) $(mm_src)
+
+t1_depends := $(t1_head) $(test_head)
+cp_depends := $(t1_depends) $(cp_files) $(cp_head)
+ss_depends := $(t1_depends) $(ss_files) $(ss_head)
+mm_depends := $(t1_depends) $(mm_files) $(mm_head)
+bu_depends := $(t1_depends) $(bu_files) $(bu_head)
 
 CPPFLAGS := -Iinclude
 
-test: $(output_file)
-	$(output_file)
+# Crear binarios para el metodo de Ciaccia-Patella
+$(cp): $(cp_bin)
+	$(cp_bin)
 
-$(output_file): $(source_files) $(header_files) $(test_files) $(test_header_files)
-	g++ $(source_files) $(test_files) -o $(output_file) $(CPPFLAGS)
+$(cp_bin): $(cp_depends)
+	g++ $(CPPFLAGS) -o $(cp_files)
 
-test-clang: $(output_file_clang)
-	$(output_file_clang)
+# Crear binarios para el metodo de Sexton-Swinbank
+$(ss): $(ss_bin)
+	$(ss_bin)
 
-$(output_file_clang): $(source_files) $(header_files) $(test_files) $(test_header_files)
-	clang++ $(source_files) $(test_files) -o $(output_file_clang) $(CPPFLAGS)
+$(ss_bin): $(ss_depends)
+	g++ $(CPPFLAGS) -o $(ss_files)
 
-format:
-	clang-format -i $(source_files) $(header_files) $(test_files) $(test_header_files)
+# Crear binarios para la función min-max split
+$(mm): $(mm_bin)
+	$(mm_bin)
+
+$(mm_bin): $(mm_depends)
+	g++ $(CPPFLAGS) -o $(mm_files)
 
 clean:
 	rm $(output_dir)/*
+
+format:
+	clang-format -i $(source_dir)/* $(header_dir)/* $(test_dir)/*
+
+
+
 

@@ -1,8 +1,9 @@
 
 #include <cmath>
 #include <iostream>
+#include <random>
 
-#include "tarea1.hpp"
+#include "tarea.hpp"
 
 Nodo *crear_nodo() {
     Nodo *n = new Nodo;
@@ -40,24 +41,18 @@ int altura_arbol(Nodo const &arbol) {
 }
 
 std::mt19937 rdg(GLOBAL_RANDOM_SEED);
-std::uniform_real_distribution<double> dist_double(
-    std::numeric_limits<double>::min(), std::numeric_limits<double>::max());
 std::uniform_real_distribution<double> dist_double_0_1(0.0, 1.0);
 std::uniform_real_distribution<double> dist_double_0_inf(0.0, std::numeric_limits<double>::max());
 std::uniform_int_distribution<int> dist_int_0_inf(0.0, std::numeric_limits<int>::max());
 
-inline double random_double() {
-    return dist_double(rdg);
-}
-
-inline double random_double_0_a_1() {
+double random_double_0_a_1() {
     return dist_double_0_1(rdg);
 }
 
-inline double random_double_positivo() {
-    return dist_double_0_1(rdg);
+double random_double_positivo() {
+    return dist_double_0_inf(rdg);
 }
 
-inline int random_int_positivo() {
+int random_int_positivo() {
     return dist_int_0_inf(rdg);
 }

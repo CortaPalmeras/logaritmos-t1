@@ -1,7 +1,7 @@
 
 #include <vector>
 
-#include "tarea1.hpp"
+#include "tarea.hpp"
 
 Nodo *sexton_swinbank(Conjunto &puntos);
 

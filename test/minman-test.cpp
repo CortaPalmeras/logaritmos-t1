@@ -1,2 +1,0 @@
-
-#include <sexton-swinbank.hpp>

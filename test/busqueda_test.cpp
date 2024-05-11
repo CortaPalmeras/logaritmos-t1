@@ -5,10 +5,10 @@
 #include <vector>
 
 #include "busqueda.hpp"
-#include "ciaccia-patella.hpp"
-#include "sexton-swinbank.hpp"
-#include "tarea-1-tests.hpp"
-#include "tarea1.hpp"
+#include "ciaccia_patella.hpp"
+#include "sexton_swinbank.hpp"
+#include "tarea.hpp"
+#include "tarea_test.hpp"
 
 using namespace std;
 
@@ -78,7 +78,7 @@ void test_intervalo_confianz(vector<double> &muestra) {
     pair<double, double> intervalo_confianza = intervaloConfianza(muestra, nivel_confianza);
 }
 
-void test_busqueda() {
+int main(void) {
     test_tiempos_accesos();
     test_intervalo_confianza();
 }

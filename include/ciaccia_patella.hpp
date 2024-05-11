@@ -5,7 +5,7 @@
 
 #include <map>
 
-#include "tarea1.hpp"
+#include "tarea.hpp"
 
 Nodo *ciaccia_patella(Conjunto const &p_in);
 

@@ -4,6 +4,7 @@
 #define TAREA_1
 
 #include <cmath>
+#include <cstdlib>
 #include <vector>
 
 struct punto;
@@ -41,7 +42,11 @@ typedef std::vector<punto> Conjunto;
 typedef std::vector<Conjunto> Particion;
 
 inline bool operator==(Punto const &a, Punto const &b) {
-    return a.x == b.x && a.y == b.y;
+    return std::abs(a.x - b.x) < 0.001 && std::abs(a.y - b.y) < 0.001;
+}
+
+inline bool operator<(Punto const &a, Punto const &b) {
+    return a.x < b.x;
 }
 
 inline double distancia(Punto const &a, Punto const &b) {
@@ -56,9 +61,8 @@ int altura_arbol(Nodo const &arbol);
 
 void eliminar_arbol(Nodo *arbol);
 
-inline double random_double();
-inline double random_double_0_a_1();
-inline double random_double_positivo();
-inline int random_int_positivo();
+double random_double_0_a_1();
+double random_double_positivo();
+int random_int_positivo();
 
 #endif
