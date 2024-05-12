@@ -35,8 +35,8 @@ def crear_histograma(actual,lista,tipo):
     plt.savefig(f"grafico {tipo} del arbol {actual}")
 
 def crear_intervalo_confianza(actual,lista,tipo):
-    media=np.mean(lista)
-    desviacion=np.std(lista)
+    media=np.mean(lista[actual-10])
+    desviacion=np.std(lista[actual-10])
     error=desviacion/np.sqrt(100)
     confianza=0.95
     inferior=media-1.96*error
@@ -52,6 +52,8 @@ def crear_intervalo_confianza(actual,lista,tipo):
 
 
 def crear_graficos():
+    leer_accesos()
+    leer_tiempos()
     for i in range(0,15):
         actual=10
         crear_histograma(actual,arboles_accesos,"accesos")
