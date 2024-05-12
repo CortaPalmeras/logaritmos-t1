@@ -1,42 +1,65 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Generar datos de altura aleatorios que siguen una distribución normal
-np.random.seed(0)  # Para reproducibilidad
-altura_media = 170  # Media de la altura en cm
-desviacion_estandar = 10  # Desviación estándar de la altura en cm
-num_muestras = 1000  # Número de muestras de altura
+arboles_accesos=[]
+arboles_tiempos=[]
 
-alturas = np.random.normal(loc=altura_media, scale=desviacion_estandar, size=num_muestras)
+def leer_accesos():
+    with open("archivo_accesos","r") as f:
+        actual=-1
+        for linea in f:
+            if linea[0]=="a":
+                actual+=1
+                arboles_accesos+=[]
+            else:
+                arboles_accesos[actual]+=linea
+def leer_tiempos():
+    with open("archivo_tiempos","r") as f:
+        actual=-1
+        for linea in f:
+            if linea[0]=="a":
+                actual+=1
+                arboles_tiempos+=[]
+            else:
+                arboles_tiempos[actual]+=linea
+def crear_histograma(actual,lista,tipo):
+    
+    datos = lista[actual-10]
 
-# Calcular el intervalo de confianza para la media de las alturas
-media_muestral = np.mean(alturas)
-error_estandar = desviacion_estandar / np.sqrt(num_muestras)  # Error estándar de la media
-nivel_confianza = 0.95  # Nivel de confianza del 95%
-z_score = 1.96  # Valor crítico para un intervalo de confianza del 95%
+    plt.hist(datos, bins=10, color='skyblue', edgecolor='black')
 
-limite_inferior = media_muestral - z_score * error_estandar
-limite_superior = media_muestral + z_score * error_estandar
+    plt.title(f'Histograma de {tipo} de arbol ')
+    plt.xlabel(f'{tipo}')
+    plt.ylabel('Frecuencia')
 
-# Graficar un histograma de las alturas
-plt.hist(alturas, bins=30, density=True, color='skyblue', edgecolor='black')
+    plt.savefig(f"grafico {tipo} del arbol {actual}")
 
-# Graficar la campana (distribución normal) con la media y el intervalo de confianza
-x = np.linspace(altura_media - 4 * desviacion_estandar, altura_media + 4 * desviacion_estandar, 100)
-y = 1 / (desviacion_estandar * np.sqrt(2 * np.pi)) * np.exp(-0.5 * ((x - altura_media) / desviacion_estandar) ** 2)
-plt.plot(x, y, color='red')
+def crear_intervalo_confianza(actual,lista,tipo):
+    media=np.mean(lista)
+    desviacion=np.std(lista)
+    error=desviacion/np.sqrt(100)
+    confianza=0.95
+    inferior=media-1.96*error
+    superior=media+1.96*error
+    x = np.linspace(media - 4 * desviacion, media + 4 * desviacion, 100)
+    y = 1 / (desviacion * np.sqrt(2 * np.pi)) * np.exp(-0.5 * ((x -media) / desviacion) ** 2)
+    plt.plot(x, y, color='red')
+    plt.title(f"Distribucion de {tipo}")
+    plt.xlabel(f"{tipo}")
+    plt.ylabel('Densidad de Probabilidad')
+    plt.legend()
+    plt.savefig(f"grafico {tipo} del arbol {actual} ")
 
-# Agregar líneas verticales para mostrar el intervalo de confianza
-plt.axvline(limite_inferior, color='green', linestyle='--', label='Limite Inferior de IC (95%)')
-plt.axvline(limite_superior, color='green', linestyle='--', label='Limite Superior de IC (95%)')
 
-# Configurar título y etiquetas de los ejes
-plt.title('Distribución de Alturas')
-plt.xlabel('Altura (cm)')
-plt.ylabel('Densidad de Probabilidad')
+def crear_graficos():
+    for i in range(0,15):
+        actual=10
+        crear_histograma(actual,arboles_accesos,"accesos")
+        crear_histograma(actual,arboles_tiempos,"tiempos")
+        crear_intervalo_confianza(actual,arboles_accesos,"accesos")
+        crear_intervalo_confianza(actual,arboles_tiempos,"tiempos")
+        actual+=1
+    
 
-# Mostrar leyenda
-plt.legend()
 
-# Mostrar el gráfico
-plt.show()
+
