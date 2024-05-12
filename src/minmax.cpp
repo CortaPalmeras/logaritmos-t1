@@ -56,7 +56,7 @@ void minmax_split(Conjunto &puntos, Conjunto &c1, Conjunto &c2) {
 
             // Se van añadiendo los indices de los puntos de manera que queden
             // ordenados por distancia, en las dos listas enlazadas.
-            for (uint n = 1; n < i; n++) {
+            for (uint n = 0; n < i; n++) {
                 añadir_nodo(primero1, nodos_cola_1 + n, distancias, i, n);
                 añadir_nodo(primero2, nodos_cola_2 + n, distancias, j, n);
             }
@@ -83,7 +83,7 @@ void minmax_split(Conjunto &puntos, Conjunto &c1, Conjunto &c2) {
             // se van extrayendo los puntos de las listas enlazadas como
             // si estas fueran colas, cuando se extrae un indice de una de las
             // dos listas este se debe eliminar de la otra.
-            for (int k = 0, fin = size - 4; k < fin; k++) {
+            for (int k = 0, fin = size - 2; k < fin; k++) {
                 if (k % 2 == 0) {
                     (*out1_candidato)[k / 2] = puntos[primero1->indice];
                     eliminar_nodo(nodos_cola_2 + primero1->indice, &primero2);
@@ -99,10 +99,14 @@ void minmax_split(Conjunto &puntos, Conjunto &c1, Conjunto &c2) {
             // al punto más lejano.
             int ultimo_indice_1 = primero1->indice;
             eliminar_nodo(nodos_cola_2 + primero1->indice, &primero2);
+            primero1 = primero1->siguiente;
+
             int ultimo_indice_2 = primero2->indice;
+            eliminar_nodo(nodos_cola_1 + primero2->indice, &primero1);
+            primero2 = primero2->siguiente;
 
             (*out1_candidato)[out1_candidato->size() - 1] = puntos[ultimo_indice_1];
-            (*out2_candidato)[out2_candidato->size() - 2] = puntos[ultimo_indice_2];
+            (*out2_candidato)[out2_candidato->size() - 1] = puntos[ultimo_indice_2];
 
             double r_candidato;
             if (distancias[i][ultimo_indice_1] < distancias[j][ultimo_indice_2]) {

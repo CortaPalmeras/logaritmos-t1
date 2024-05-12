@@ -9,7 +9,7 @@
 using namespace std;
 
 int main(void) {
-    cout << " --- TEST: SEXTON-SWINBANK ---\n"
+    cout << "\n --- TEST: SEXTON-SWINBANK ---\n"
          << endl;
 
     for (int i = 10; i <= 25; i++) {

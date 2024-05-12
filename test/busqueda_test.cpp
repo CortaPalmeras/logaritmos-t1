@@ -29,7 +29,9 @@ void test_tiempos_accesos() {
             auto inicio = chrono::high_resolution_clock::now();
 
             Conjunto output_busqueda;
+            cout << "busqueda " << j + 1 << " en progreso." << endl;
             matriz_accesos[i][j] = busqueda(*arbol, (*queries)[j], output_busqueda);
+            cout << "busqueda " << j + 1 << " finalizada." << endl;
 
             auto fin = chrono::high_resolution_clock::now();
             auto duracion = chrono::duration_cast<std::chrono::microseconds>(fin - inicio);

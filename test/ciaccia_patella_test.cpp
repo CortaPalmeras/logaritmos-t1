@@ -9,7 +9,7 @@
 using namespace std;
 
 int main(void) {
-    cout << " --- TEST: CIACCIA-PATELLA ---\n"
+    cout << "\n --- TEST: CIACCIA-PATELLA ---\n"
          << endl;
 
     for (int i = 10; i <= 25; i++) {

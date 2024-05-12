@@ -229,31 +229,24 @@ void asignar_distancias_arbol(Nodo &arbol) {
     }
 }
 
-// Esta función está mal
-// asume que el nodo al que apunta una entrada siempre tiene su punto
-// pero esto no es cierto
 void asignar_distancias_entrada(Entry &entrada) {
+    if (entrada.a == NULL) {
+        entrada.r = 0;
+        return;
+    }
+
     Nodo &nodo = *entrada.a;
+    double r_max = 0;
 
-    if (nodo.entradas[0].a == NULL) {
-        double d_maxima = numeric_limits<int>::min();
+    for (int i = 0; i < nodo.size; i++) {
+        asignar_distancias_entrada(nodo.entradas[i]);
 
-        for (int i = 0; i < nodo.size; i++) {
-            double d_candidata = distancia(entrada.p, nodo.entradas[i].p);
-            if (d_maxima < d_candidata) {
-                d_maxima = d_candidata;
-            }
-        }
+        double r_candidato = distancia(entrada.p, nodo.entradas[i].p) + nodo.entradas[i].r;
 
-        entrada.r = d_maxima;
-
-    } else {
-        for (int i = 0; i < nodo.size; i++) {
-            asignar_distancias_entrada(nodo.entradas[i]);
-
-            if (nodo.entradas[i].p == entrada.p) {
-                entrada.r = nodo.entradas[i].r;
-            }
+        if (r_max < r_candidato) {
+            r_max = r_candidato;
         }
     }
+
+    entrada.r = r_max;
 }

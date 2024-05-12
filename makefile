@@ -72,6 +72,11 @@ $(ss_bin): $(ss_depends)
 	$(CXX) $(CPPFLAGS) $(ss_files) -o $(ss_bin)
 
 # Crear binarios para la función min-max split
+$(mm): $(mm_bin)
+	$(mm_bin)
+
+$(mm_bin): $(mm_depends)
+	$(CXX) $(CPPFLAGS) $(mm_files) -o $(mm_bin)
 
 # Crear binarios para la función de busqueda
 $(bu): $(bu_bin)
