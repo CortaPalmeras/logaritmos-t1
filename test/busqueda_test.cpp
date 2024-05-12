@@ -6,10 +6,10 @@
 
 #include "busqueda.hpp"
 #include "ciaccia_patella.hpp"
+#include "fstream"
 #include "sexton_swinbank.hpp"
 #include "tarea.hpp"
 #include "tarea_test.hpp"
-#include "fstream"
 using namespace std;
 
 vector<vector<int>> matriz_accesos(16, std::vector<int>(100));
@@ -42,23 +42,22 @@ void test_tiempos_accesos() {
     }
 }
 
-void crear_txts(){
+void crear_txts() {
     ofstream archivo1("archivo_accesos");
     ofstream archivo2("archivo_tiempos");
-    int potencia=10;
-    for (int i=0;i<16;i++){
-        archivo1<<"arbol 2 a la "+to_string(potencia)+"\n";
-        archivo2<<"arbol 2 a la "+to_string(potencia)+"\n";
+    int potencia = 10;
+    for (int i = 0; i < 16; i++) {
+        archivo1 << "arbol 2 a la " + to_string(potencia) + "\n";
+        archivo2 << "arbol 2 a la " + to_string(potencia) + "\n";
         potencia++;
-        for(int j=0;j<100;j++){
-            archivo1<<to_string(matriz_accesos[i][j])+"\n";
-            archivo2<<to_string(matriz_tiempos[i][j])+"\n";
+        for (int j = 0; j < 100; j++) {
+            archivo1 << to_string(matriz_accesos[i][j]) + "\n";
+            archivo2 << to_string(matriz_tiempos[i][j]) + "\n";
         }
     }
     archivo1.close();
     archivo2.close();
 }
-
 
 int main(void) {
     test_tiempos_accesos();

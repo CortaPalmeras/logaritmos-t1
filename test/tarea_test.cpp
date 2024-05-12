@@ -1,7 +1,7 @@
 
-#include <set>
-#include <vector>
 #include <cassert>
+#include <unordered_map>
+#include <vector>
 
 #include "tarea.hpp"
 #include "tarea_test.hpp"
@@ -23,15 +23,29 @@ int test_estrucutra_correcta_recur(Nodo *arbol) {
     return h + 1;
 }
 
-void extraer_puntos(Nodo &arbol, set<Punto> &arbol_set) {
+void verificar_puntos(Nodo &arbol, unordered_map<Punto, int, PuntoHash> &arbol_hash) {
     if (arbol.entradas[0].a == NULL) {
         for (int i = 0; i < arbol.size; i++) {
-            arbol_set.insert(arbol.entradas[i].p);
+            arbol_hash[arbol.entradas[i].p] = 1;
         }
+
     } else {
         for (int i = 0; i < arbol.size; i++) {
-            extraer_puntos(*arbol.entradas[i].a, arbol_set);
+            verificar_puntos(*arbol.entradas[i].a, arbol_hash);
         }
+    }
+}
+
+uint contar_puntos(Nodo &arbol) {
+    if (arbol.entradas[0].a == NULL) {
+        return arbol.size;
+
+    } else {
+        uint suma = 0;
+        for (int i = 0; i < arbol.size; i++) {
+            suma += contar_puntos(*arbol.entradas[i].a);
+        }
+        return suma;
     }
 }
 
@@ -47,15 +61,17 @@ void test_estrucutra_correcta(Nodo &arbol) {
     }
 }
 
-// Este test checkea que todos los puntos se hayan insertado correctamente 
+// Este test checkea que todos los puntos se hayan insertado correctamente
 // en un M-Tree
 void test_puntos_correctos(Nodo &arbol, Conjunto &puntos) {
-    set<Punto> punto_set(puntos.begin(), puntos.end());
-    set<Punto> arbol_set(puntos.begin(), puntos.end());
+    assert(contar_puntos(arbol) == puntos.size());
 
-    extraer_puntos(arbol, arbol_set);
+    unordered_map<Punto, int, PuntoHash> arbol_hash;
+    verificar_puntos(arbol, arbol_hash);
 
-    assert(arbol_set == punto_set);
+    for (Punto &p : puntos) {
+        assert(arbol_hash[p] == 1);
+    }
 }
 
 Conjunto *generar_conjunto_puntos(int cantidad) {

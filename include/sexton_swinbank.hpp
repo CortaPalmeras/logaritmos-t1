@@ -13,7 +13,6 @@ Entry output_hoja(Conjunto &c_in);
 
 Entry output_interno(std::vector<Entry> const &c_mra);
 
-std::pair<int,int> elegir_pares_cercanos(Particion const &clusters, std::vector<int> const &medoides);
+std::pair<int, int> elegir_pares_cercanos(Particion const &clusters, std::vector<int> const &medoides);
 
 Particion *crear_clusters(Conjunto &c_in);
-

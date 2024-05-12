@@ -23,13 +23,13 @@ Nodo *crear_nodo(Conjunto const &puntos) {
 }
 
 Nodo *crear_nodo(std::vector<Entry> const &entradas) {
-    Nodo *C = crear_nodo();
-    
+    Nodo *n = crear_nodo();
+
     for (auto entrada : entradas) {
-        añadir_entrada(C, entrada);
+        añadir_entrada(n, entrada);
     }
-    
-    return C;
+
+    return n;
 }
 
 void añadir_entrada(Nodo *n, Entry e) {
@@ -96,4 +96,3 @@ void reiniciar_rng() {
 void reiniciar_rng(int seed) {
     rng.seed(seed);
 }
-

@@ -33,6 +33,7 @@ mm_test := $(test_dir)/$(mm)_test.cpp
 bu_test := $(test_dir)/$(bu)_test.cpp
 
 test_head := $(test_dir)/$(t1)_test.hpp
+graph_py := $(test_dir)/graficos_intervalos.py
 
 t1_files := $(t1_test) $(t1_src)
 cp_files := $(t1_files) $(cp_test) $(cp_src) 
@@ -72,8 +73,16 @@ $(ss_bin): $(ss_depends)
 
 # Crear binarios para la función min-max split
 
+# Crear binarios para la función de busqueda
+$(bu): $(bu_bin)
+	$(bu_bin)
+
+$(bu_bin): $(bu_depends)
+	$(CXX) $(CPPFLAGS) $(bu_files) -o $(bu_bin)
+
 format:
-	clang-format -i $(source_dir)/* $(header_dir)/* $(test_dir)/*
+	clang-format -i $(source_dir)/*.cpp $(header_dir)/*.hpp $(test_dir)/*.cpp $(test_dir)/*.hpp 
+	black $(graph_py)
 
 clean:
 	rm $(output_dir)/*

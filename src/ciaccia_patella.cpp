@@ -16,13 +16,12 @@ using namespace std;
 #include <chrono>
 #include <iostream>
 
-#define INICIAR_ALGORITMO         \
+#define INICIAR_ALGORITMO      \
     cout << "Paso: 1" << endl; \
     auto t = chrono::high_resolution_clock::now();
 
 #define INICIAR_PASO(paso) \
-    cout << "Paso: " << paso << " " << \
-        (chrono::high_resolution_clock::now() - t).count() << endl;
+    cout << "Paso: " << paso << " " << (chrono::high_resolution_clock::now() - t).count() << endl;
 
 #else
 
@@ -36,20 +35,18 @@ Nodo *ciaccia_patella(Conjunto const &p_in) {
 
     INICIAR_ALGORITMO
     if (p_in.size() < B) {
-        return crear_nodo(p_in); 
-   }
+        return crear_nodo(p_in);
+    }
 
-    paso_2:
+paso_2:
     INICIAR_PASO(2)
     int k = p_in.size() / B;
     k = k == 1 ? 2 : k;
     k = k < B ? k : B;
     Conjunto *F = random_sample(p_in, k);
 
-
     INICIAR_PASO(3)
     Particion *particion = crear_particion(p_in, *F);
-
 
     INICIAR_PASO(4)
     for (int i = 0, fin = particion->size(); i < fin;) {
@@ -70,7 +67,6 @@ Nodo *ciaccia_patella(Conjunto const &p_in) {
         }
     }
 
-    
     INICIAR_PASO(5)
     if (F->size() <= 1) {
         delete F;
@@ -78,14 +74,12 @@ Nodo *ciaccia_patella(Conjunto const &p_in) {
         goto paso_2;
     }
 
-
     INICIAR_PASO(6)
     vector<Nodo *> arboles(particion->size());
     for (uint i = 0; i < particion->size(); i++) {
         arboles[i] = ciaccia_patella((*particion)[i]);
     }
     delete particion;
-
 
     INICIAR_PASO(7)
     for (int i = 0, fin = arboles.size(); i < fin;) {
@@ -120,7 +114,6 @@ Nodo *ciaccia_patella(Conjunto const &p_in) {
         }
     }
 
-
     INICIAR_PASO(8)
     int h_minima = numeric_limits<int>::max();
     vector<int> alturas(arboles.size());
@@ -129,7 +122,6 @@ Nodo *ciaccia_patella(Conjunto const &p_in) {
         alturas[i] = altura_arbol(*arboles[i]);
         h_minima = h_minima < alturas[i] ? h_minima : alturas[i];
     }
-
 
     INICIAR_PASO(9)
     map<Punto, Nodo *> balanceamiento;
@@ -145,18 +137,14 @@ Nodo *ciaccia_patella(Conjunto const &p_in) {
     }
     delete F;
 
-
     INICIAR_PASO(10)
     Nodo *T_superior = ciaccia_patella(F_balanceamiento);
-
 
     INICIAR_PASO(11)
     unir_subarboles(T_superior, balanceamiento);
 
-
     INICIAR_PASO(12)
-    // asignar_distancias_arbol(*T_superior);
-
+    asignar_distancias_arbol(*T_superior);
 
     INICIAR_PASO(13)
     return T_superior;
@@ -204,9 +192,9 @@ void asignar_puntos_a_samples(Conjunto const &puntos, Conjunto const &samples, P
     }
 }
 
-// Función que extrae todos los sub arboles de tamaño h de un arbol que se asume que es 
-// de mayor tamaño, los 
-void extraer_subarboles(Nodo *arbol, map<Punto, Nodo*> &raices, Conjunto &puntos, int dif) {
+// Función que extrae todos los sub arboles de tamaño h de un arbol que se asume que es
+// de mayor tamaño, los
+void extraer_subarboles(Nodo *arbol, map<Punto, Nodo *> &raices, Conjunto &puntos, int dif) {
     if (dif == 1) {
         for (int i = 0; i < arbol->size; i++) {
             raices[arbol->entradas[i].p] = arbol->entradas[i].a;

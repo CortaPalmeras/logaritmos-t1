@@ -18,7 +18,7 @@ void minmax_split(Conjunto &puntos, Conjunto &c1, Conjunto &c2);
 
 void reiniciar_cola(dll *cola, int tamaño);
 
-void añadir_nodo(dll **primero, dll *nodo, mat_distancias &d, int i, int n);
+void añadir_nodo(dll *primero, dll *nodo, mat_distancias &d, int i, int n);
 
 void eliminar_nodo(dll *nodo, dll **primero);
 

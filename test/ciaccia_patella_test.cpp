@@ -9,7 +9,8 @@
 using namespace std;
 
 int main(void) {
-    cout << " --- TEST: CIACCIA-PATELLA ---\n" << endl;
+    cout << " --- TEST: CIACCIA-PATELLA ---\n"
+         << endl;
 
     for (int i = 10; i <= 25; i++) {
         cout << "Testeando con 2^" << i << " puntos." << endl;
@@ -22,7 +23,8 @@ int main(void) {
 
         cout << "Test de puntos...   ";
         test_puntos_correctos(*arbol, *puntos);
-        cout << "Pasado!\n" << endl;
+        cout << "Pasado!\n"
+             << endl;
 
         eliminar_conjunto_puntos(puntos);
         eliminar_arbol(arbol);

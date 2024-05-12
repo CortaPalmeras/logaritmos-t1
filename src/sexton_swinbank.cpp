@@ -1,21 +1,14 @@
 
 #include <cmath>
 #include <limits>
-#include <memory>
 #include <unordered_map>
 #include <vector>
 
-#include "sexton_swinbank.hpp"
 #include "minmax.hpp"
+#include "sexton_swinbank.hpp"
 #include "tarea.hpp"
 
 using namespace std;
-
-struct PuntoHash {
-    size_t operator()(Punto const & p) const {
-        return hash<double>()(p.x) ^ (hash<double>()(p.y) << 1);
-    }
-};
 
 Nodo *sexton_swinbank(Conjunto &c_in) {
     if (c_in.size() <= B) {
@@ -23,6 +16,7 @@ Nodo *sexton_swinbank(Conjunto &c_in) {
     }
 
     Particion *c_out = crear_clusters(c_in);
+
     vector<Entry> c;
     unordered_map<Punto, int, PuntoHash> puntos_a_indices;
 
@@ -71,7 +65,7 @@ Nodo *sexton_swinbank(Conjunto &c_in) {
 pair<int, double> elegir_medoide(Conjunto const &puntos) {
     vector<double> r_max(puntos.size(), 0);
 
-    // Itera por todos los pared distintos de puntos, seteando por cada uno 
+    // Itera por todos los pared distintos de puntos, seteando por cada uno
     // su maximo radio, así hallando todos los radios cobertores.
     for (uint i = 0; i < puntos.size(); i++) {
         for (uint j = i + 1; j < puntos.size(); j++) {
@@ -96,7 +90,6 @@ pair<int, double> elegir_medoide(Conjunto const &puntos) {
     return {i_min, r_min};
 }
 
-
 Entry output_hoja(Conjunto &c_in) {
     pair<int, double> medoide = elegir_medoide(c_in);
     Nodo *c = crear_nodo(c_in);
@@ -120,10 +113,9 @@ Entry output_interno(vector<Entry> const &c_mra) {
     return {G, R, C};
 }
 
-
-pair<int,int> elegir_pares_cercanos(Particion const &clusters, vector<int> const &medoides) {
+pair<int, int> elegir_pares_cercanos(Particion const &clusters, vector<int> const &medoides) {
     double d_min = numeric_limits<double>::max();
-    pair<int,int> cercanos;
+    pair<int, int> cercanos;
 
     for (uint i = 0; i < clusters.size(); i++) {
         for (uint j = i + 1; j < clusters.size(); j++) {
@@ -140,7 +132,6 @@ pair<int,int> elegir_pares_cercanos(Particion const &clusters, vector<int> const
     return cercanos;
 }
 
-
 Particion *crear_clusters(Conjunto &c_in) {
     Particion c(c_in.size(), vector<Punto>(1));
     vector<int> medoides(c_in.size());
@@ -155,8 +146,8 @@ Particion *crear_clusters(Conjunto &c_in) {
     vector<int> medoides_out;
 
     while (c.size() > 1) {
-        pair<int,int> p = elegir_pares_cercanos(c, medoides);
-        
+        pair<int, int> p = elegir_pares_cercanos(c, medoides);
+
         if (c[p.first].size() + c[p.second].size() < B) {
 
             // Se añaden los elementos del segundo cluster al primero y luego se elimina.
@@ -169,15 +160,15 @@ Particion *crear_clusters(Conjunto &c_in) {
 
         } else {
             // Se elimina el cluster más grande y se añade a c_out
-            int cluster_mas_grande = p.first < p.second ? p.second : p.first;
-            c_out->push_back(c[cluster_mas_grande]);
-            medoides_out.push_back(medoides[cluster_mas_grande]);
+            int indice_cluster_mas_grande = c[p.first].size() < c[p.second].size() ? p.second : p.first;
 
-            c.erase(c.begin() + cluster_mas_grande);
-            medoides.erase(medoides.begin() + cluster_mas_grande);
+            c_out->push_back(c[indice_cluster_mas_grande]);
+            medoides_out.push_back(medoides[indice_cluster_mas_grande]);
+
+            c.erase(c.begin() + indice_cluster_mas_grande);
+            medoides.erase(medoides.begin() + indice_cluster_mas_grande);
         }
     }
-
 
     Conjunto c_prima;
 
@@ -196,14 +187,14 @@ Particion *crear_clusters(Conjunto &c_in) {
 
         c_prima = std::move((*c_out)[mas_cercano]);
         c_out->erase(c_out->begin() + mas_cercano);
-        //medoides_out.erase(medoides_out.begin() + mas_cercano);
+        // medoides_out.erase(medoides_out.begin() + mas_cercano);
     }
 
     c_prima.insert(c_prima.begin(), c[0].begin(), c[0].end());
 
     if (c_prima.size() + c[0].size() < B) {
         c_out->push_back(c_prima);
-        //medoides_out.push_back(elegir_medoide(c_prima).first);
+        // medoides_out.push_back(elegir_medoide(c_prima).first);
 
     } else {
         Conjunto c1;
@@ -211,10 +202,9 @@ Particion *crear_clusters(Conjunto &c_in) {
         minmax_split(c_prima, c1, c2);
         c_out->push_back(c1);
         c_out->push_back(c2);
-        //medoides_out.push_back(elegir_medoide(c1).first);
-        //medoides_out.push_back(elegir_medoide(c2).first);
+        // medoides_out.push_back(elegir_medoide(c1).first);
+        // medoides_out.push_back(elegir_medoide(c2).first);
     }
 
     return c_out;
 }
-

@@ -7,7 +7,6 @@
 #include <cstdlib>
 #include <vector>
 
-
 #define GLOBAL_DEFAULT_RANDOM_SEED 37
 
 typedef struct punto {
@@ -39,7 +38,7 @@ typedef std::vector<punto> Conjunto;
 typedef std::vector<Conjunto> Particion;
 
 inline bool operator==(Punto const &a, Punto const &b) {
-    return a.x == b.x && a.y == b.y;
+    return std::abs(a.x - b.x) < 0.00001 && std::abs(a.y - b.y) < 0.00001;
 }
 
 inline bool operator<(Punto const &a, Punto const &b) {
@@ -49,6 +48,12 @@ inline bool operator<(Punto const &a, Punto const &b) {
 inline double distancia(Punto const &a, Punto const &b) {
     return sqrt(pow((a.x - b.x), 2) + pow((a.y - b.y), 2));
 }
+
+struct PuntoHash {
+    size_t operator()(Punto const &p) const {
+        return std::hash<double>()(p.x) ^ (std::hash<double>()(p.y) << 1);
+    }
+};
 
 Nodo *crear_nodo();
 Nodo *crear_nodo(Conjunto const &puntos);
