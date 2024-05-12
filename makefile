@@ -64,6 +64,11 @@ $(cp_bin): $(cp_depends)
 	$(CXX) $(CPPFLAGS) $(cp_files) -o $(cp_bin)
 
 # Crear binarios para el metodo de Sexton-Swinbank
+$(ss): $(ss_bin)
+	$(ss_bin)
+
+$(ss_bin): $(ss_depends)
+	$(CXX) $(CPPFLAGS) $(ss_files) -o $(ss_bin)
 
 # Crear binarios para la función min-max split
 

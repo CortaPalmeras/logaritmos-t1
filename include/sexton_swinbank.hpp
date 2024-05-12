@@ -1,26 +1,19 @@
 
 #include <vector>
-#include <map>
 
 #include "tarea.hpp"
 
-typedef struct {
-    Conjunto a;
-    Conjunto b;
-    int indiceA;
-    int indiceB;
-} dosConjuntos;
-
 Nodo *sexton_swinbank(Conjunto &puntos);
 
-void elegir_medoide(Conjunto &c_in, std::map<Conjunto, Punto> &medoide);
+// Retorna el indice del medoide primario de un conjunto de puntos
+// y el radio cobertor que este genera sobre el conjunto.
+std::pair<int, double> elegir_medoide(Conjunto const &puntos);
 
-void elegirParesCercanos(Particion c, std::map<Conjunto, Punto> medoide,
-                         std::map<Conjunto, int> tamaño_conjuntos, dosConjuntos &resultado);
+Entry output_hoja(Conjunto &c_in);
 
-std::vector<Conjunto> crear_clusters(Conjunto &c_in);
+Entry output_interno(std::vector<Entry> const &c_mra);
 
-Entry OutPutHoja(Conjunto &c_in);
+std::pair<int,int> elegir_pares_cercanos(Particion const &clusters, std::vector<int> const &medoides);
 
-Entry OutPutInterno(std::vector<Entry> c_mra);
+Particion *crear_clusters(Conjunto &c_in);
 

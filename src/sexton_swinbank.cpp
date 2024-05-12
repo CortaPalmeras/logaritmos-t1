@@ -1,67 +1,76 @@
 
 #include <cmath>
-#include <cstddef>
 #include <limits>
-#include <map>
+#include <memory>
+#include <unordered_map>
 #include <vector>
 
 #include "sexton_swinbank.hpp"
+#include "minmax.hpp"
 #include "tarea.hpp"
 
 using namespace std;
 
+struct PuntoHash {
+    size_t operator()(Punto const & p) const {
+        return hash<double>()(p.x) ^ (hash<double>()(p.y) << 1);
+    }
+};
 
 Nodo *sexton_swinbank(Conjunto &c_in) {
     if (c_in.size() <= B) {
-        Entry entrada = output_hoja(c_in);
-        return entrada.a;
+        return crear_nodo(c_in);
     }
 
-    vector<Conjunto> c_out = crear_clusters(c_in);
+    Particion *c_out = crear_clusters(c_in);
     vector<Entry> c;
-    for (uint i = 0; i < c_out.size(); i++) {
-        c.push_back(output_hoja(c_out[i]));
-    }
+    unordered_map<Punto, int, PuntoHash> puntos_a_indices;
+
+    for (auto puntos : *c_out)
+        c.push_back(output_hoja(puntos));
+
+    delete c_out;
+
     while (c.size() > B) {
-        Conjunto c_in;
+
+        Conjunto medoides;
+
         for (uint i = 0; i < c.size(); i++) {
-            c_in.push_back(c[i].p);
+            puntos_a_indices[c[i].p] = i;
+            medoides.push_back(c[i].p);
         }
-        c_out = crear_clusters(c_in);
+
+        c_out = crear_clusters(medoides);
+
         vector<vector<Entry>> c_mra;
-        for (int i = 0; i < c_out.size(); i++) {
-            vector<Entry> s;
-            for (int j = 0; j < c.size(); j++) {
-                Entry entrada;
-                entrada.p = c[j].p;
-                entrada.a = c[j].a;
-                entrada.r = c[j].r;
-                for (int k = 0; k < c_out.size(); k++) {
-                    if (entrada.p.x == c_out[i][k].x && entrada.p.y == c_out[i][k].y) {
-                        s.push_back(entrada);
-                        break;
-                    }
-                }
+
+        for (Conjunto &puntos : *c_out) {
+            vector<Entry> s(puntos.size());
+
+            for (uint i = 0; i < puntos.size(); i++) {
+                s[i] = c[puntos_a_indices[puntos[i]]]; // xd
             }
+
             c_mra.push_back(s);
         }
-        vector<Entry> a;
-        c = a;
-        for (int i = 0; i < c_mra.size(); i++) {
-            c.push_back(output_interno(c_mra[i]));
+
+        c.clear();
+        delete c_out;
+
+        for (vector<Entry> &entries : c_mra) {
+            c.push_back(output_interno(entries));
         }
     }
-    Entry entrada1 = output_interno(c);
-    return entrada1.a;
+
+    Entry entrada = output_interno(c);
+    return entrada.a;
 }
 
-typedef struct medoide {
-    int indice;
-    double radio_cobertor;
-} Medoide;
-
-Medoide elegir_medoide(Conjunto &puntos) {
+// Retorna el indice del medoide primario de un conjunto de puntos
+// y el radio cobertor que este genera sobre el conjunto.
+pair<int, double> elegir_medoide(Conjunto const &puntos) {
     vector<double> r_max(puntos.size(), 0);
+
     // Itera por todos los pared distintos de puntos, seteando por cada uno 
     // su maximo radio, así hallando todos los radios cobertores.
     for (uint i = 0; i < puntos.size(); i++) {
@@ -87,126 +96,125 @@ Medoide elegir_medoide(Conjunto &puntos) {
     return {i_min, r_min};
 }
 
-// Tener en cuenta que en dosConjutnos resultado en la variable Conjunto a debe estar el mayor conjunto
-void elegirParesCercanos(Particion c, map<Conjunto, Punto> medoide,
-                         map<Conjunto, int> tamaño_conjuntos, dosConjuntos &resultado) {
-    int tamaño = c.size();
-    double distancia_candidata = numeric_limits<double>::max();
 
-    for (int i = 0; i < tamaño; i++) {
-        for (int j = 0; j < tamaño; j++) {
-
-            if (i != j && tamaño_conjuntos[c[i]] >= tamaño_conjuntos[c[j]]) {
-                double distancia_actual = distancia(medoide[c[i]], medoide[c[j]]);
-
-                if (distancia_candidata > distancia_actual) {
-                    resultado.a = c[i];
-                    resultado.b = c[j];
-                    resultado.indiceA = i;
-                    resultado.indiceB = j;
-                    distancia_candidata = distancia_actual;
-                }
-            }
-        }
-    }
+Entry output_hoja(Conjunto &c_in) {
+    pair<int, double> medoide = elegir_medoide(c_in);
+    Nodo *c = crear_nodo(c_in);
+    return {c_in[medoide.first], medoide.second, c};
 }
 
-vector<Conjunto> crear_clusters(Conjunto &c_in) {
-    int tamaño = c_in.size();
-    Particion c_out;
-    Particion c;
-    map<Conjunto, Punto> medoide;
-    map<Conjunto, int> tamaño_conjuntos;
+Entry output_interno(vector<Entry> const &c_mra) {
+    Conjunto c_in(c_mra.size());
 
-    for (int i = 0; i < tamaño; i++) {
-        c[i].push_back(c_in[i]);
-        medoide[c[i]] = c_in[i];
-        tamaño_conjuntos[c[i]] = 1;
-    }
+    for (uint i = 0; i < c_mra.size(); i++)
+        c_in[i] = c_mra[i].p;
 
-    while (c.size() > 1) {
-        dosConjuntos par;
-        elegirParesCercanos(c, medoide, tamaño_conjuntos, par);
-        if (tamaño_conjuntos[par.a] + tamaño_conjuntos[par.b] <= B) {
-            c.erase(c.begin() + par.indiceA);
-            c.erase(c.begin() + par.indiceB);
-            Conjunto nuevo_conjunto = par.a.insert(par.a.end(), par.b.begin(), par.b.end());
-            c.push_back(nuevo_conjunto);
-            tamaño_conjuntos.erase(par.a);
-            tamaño_conjuntos.erase(par.b);
-            medoide.erase(par.a);
-            medoide.erase(par.b);
-            tamaño_conjuntos[nuevo_conjunto] = nuevo_conjunto.size();
-            elegir_medoide(nuevo_conjunto, medoide);
-        } else {
-            c.erase(c.begin() + par.indiceA);
-            c_out.push_back(par.a);
-        }
-    }
+    // La función elegir_medoide ya retorna el el radio cobertor del
+    // conjunto de puntos por lo que no es necesario re calcularlo.
+    pair<int, double> medoide = elegir_medoide(c_in);
+    Punto G = c_in[medoide.first];
+    double R = medoide.second + c_mra[medoide.first].r;
 
-    Conjunto cPrima;
-    while (c_out.size() > 0) {
-        int tamaño_c = c_out.size();
-        double distancia_actual = numeric_limits<double>::max();
-        for (int i = 0; tamaño_c; i++) {
-            double distancia_candidata = distancia(medoide[c_out[i]], medoide[c[0]]);
-            if (distancia_actual > distancia_candidata) {
-                distancia_actual = distancia_candidata;
-                cPrima = c_out[i];
-                c_out.erase(c_out.begin() + i);
-            } else {
-                cPrima = {};
+    Nodo *C = crear_nodo(c_mra);
+
+    return {G, R, C};
+}
+
+
+pair<int,int> elegir_pares_cercanos(Particion const &clusters, vector<int> const &medoides) {
+    double d_min = numeric_limits<double>::max();
+    pair<int,int> cercanos;
+
+    for (uint i = 0; i < clusters.size(); i++) {
+        for (uint j = i + 1; j < clusters.size(); j++) {
+            double d_candidata = distancia(clusters[i][medoides[i]], clusters[j][medoides[j]]);
+
+            if (d_candidata < d_min) {
+                cercanos.first = i;
+                cercanos.second = j;
+                d_min = d_candidata;
             }
         }
     }
 
-    Conjunto union1 = c.insert(c.end(), cPrima.begin(), cPrima.end());
+    return cercanos;
+}
 
-    if (c.size() + cPrima.size() <= B) {
-        c_out.insert(c_out.end(), union1.begin(), union1.end());
+
+Particion *crear_clusters(Conjunto &c_in) {
+    Particion c(c_in.size(), vector<Punto>(1));
+    vector<int> medoides(c_in.size());
+
+    // Se añaden los conjuntos a c y se definen sus medoides primarios.
+    for (uint i = 0; i < c_in.size(); i++) {
+        c[i][0] = c_in[i];
+        medoides[i] = 0;
+    }
+
+    Particion *c_out = new Particion;
+    vector<int> medoides_out;
+
+    while (c.size() > 1) {
+        pair<int,int> p = elegir_pares_cercanos(c, medoides);
+        
+        if (c[p.first].size() + c[p.second].size() < B) {
+
+            // Se añaden los elementos del segundo cluster al primero y luego se elimina.
+            c[p.first].insert(c[p.first].end(), c[p.second].begin(), c[p.second].end());
+            c.erase(c.begin() + p.second);
+            medoides.erase(medoides.begin() + p.second);
+
+            // Finalmente se actualiza el medoide de la union de los conjuntos.
+            medoides[p.first] = elegir_medoide(c[p.first]).first;
+
+        } else {
+            // Se elimina el cluster más grande y se añade a c_out
+            int cluster_mas_grande = p.first < p.second ? p.second : p.first;
+            c_out->push_back(c[cluster_mas_grande]);
+            medoides_out.push_back(medoides[cluster_mas_grande]);
+
+            c.erase(c.begin() + cluster_mas_grande);
+            medoides.erase(medoides.begin() + cluster_mas_grande);
+        }
+    }
+
+
+    Conjunto c_prima;
+
+    if (!c_out->empty()) {
+        int mas_cercano = 0;
+        double d_min = numeric_limits<double>::max();
+
+        for (uint i = 0; i < c_out->size(); i++) {
+            double d_candidata = distancia(c[0][medoides[0]], (*c_out)[i][medoides_out[i]]);
+
+            if (d_candidata < d_min) {
+                mas_cercano = i;
+                d_min = d_candidata;
+            }
+        }
+
+        c_prima = std::move((*c_out)[mas_cercano]);
+        c_out->erase(c_out->begin() + mas_cercano);
+        //medoides_out.erase(medoides_out.begin() + mas_cercano);
+    }
+
+    c_prima.insert(c_prima.begin(), c[0].begin(), c[0].end());
+
+    if (c_prima.size() + c[0].size() < B) {
+        c_out->push_back(c_prima);
+        //medoides_out.push_back(elegir_medoide(c_prima).first);
+
     } else {
-        min_max_split();
-        Conjunto c1 = par.a;
-        Conjunto c2 = par.b;
-        c_out.insert(c_out.end(), c1.begin(), c1.end());
-        c_out.insert(c_out.end(), c2.begin(), c2.end());
+        Conjunto c1;
+        Conjunto c2;
+        minmax_split(c_prima, c1, c2);
+        c_out->push_back(c1);
+        c_out->push_back(c2);
+        //medoides_out.push_back(elegir_medoide(c1).first);
+        //medoides_out.push_back(elegir_medoide(c2).first);
     }
 
     return c_out;
-}
-
-void crear_nodo()
-
-Entry output_hoja(Conjunto &c_in) {
-    Medoide medoide = elegir_medoide(c_in);
-
-    Nodo *c = new Nodo;
-    for (uint i = 0; i < c_in.size(); i++) {
-        añadir_entrada(c, c_in[i]);
-    }
-
-    return {c_in[medoide.indice], medoide.radio_cobertor, c};
-}
-
-Entry *output_interno(vector<Entry> &c_mra) {
-    vector<Punto> c_in;
-    Entry resultado;
-    Nodo c;
-    for (int i = 0; i < c_mra.size(); i++) {
-        c_in.push_back(c_mra[i].p);
-    }
-    double R = 0;
-    map<Conjunto, Punto> medoide;
-    elegir_medoide(c_in, medoide);
-    Punto medoide_primario = medoide[c_in];
-    for (int i = 0; i < c_mra.size(); i++) {
-        c.entradas[i] = c_mra[i];
-        R = max(R, distancia(medoide_primario, c_mra[i].p) + c_mra[i].r);
-    }
-
-    resultado.r = R;
-    resultado.a = &c;
-    resultado.p = medoide_primario;
-    return resultado;
 }
 

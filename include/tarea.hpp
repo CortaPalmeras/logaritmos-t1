@@ -7,12 +7,8 @@
 #include <cstdlib>
 #include <vector>
 
-struct punto;
-struct query;
-struct entry;
-struct nodo;
 
-#define GLOBAL_RANDOM_SEED 37
+#define GLOBAL_DEFAULT_RANDOM_SEED 37
 
 typedef struct punto {
     double x;
@@ -24,6 +20,7 @@ typedef struct query {
     double r;
 } Query;
 
+struct nodo;
 typedef struct entry {
     Punto p;
     double r;
@@ -42,7 +39,7 @@ typedef std::vector<punto> Conjunto;
 typedef std::vector<Conjunto> Particion;
 
 inline bool operator==(Punto const &a, Punto const &b) {
-    return std::abs(a.x - b.x) < 0.001 && std::abs(a.y - b.y) < 0.001;
+    return a.x == b.x && a.y == b.y;
 }
 
 inline bool operator<(Punto const &a, Punto const &b) {
@@ -54,9 +51,10 @@ inline double distancia(Punto const &a, Punto const &b) {
 }
 
 Nodo *crear_nodo();
-
 Nodo *crear_nodo(Conjunto const &puntos);
+Nodo *crear_nodo(std::vector<Entry> const &entradas);
 
+void añadir_entrada(Nodo *n, Entry e);
 void añadir_entrada(Nodo *n, Punto p);
 
 int altura_arbol(Nodo const &arbol);
@@ -66,5 +64,8 @@ void eliminar_arbol(Nodo *arbol);
 double random_double_0_a_1();
 double random_double_positivo();
 int random_int_positivo();
+
+void reiniciar_rng();
+void reiniciar_rng(int seed);
 
 #endif

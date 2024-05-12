@@ -9,27 +9,24 @@
 
 using namespace std;
 
-#define TIMEAR 0
+#define TOMAR_TIEMPO 0
 
-#if TIMEAR
+#if TOMAR_TIEMPO
 
 #include <chrono>
 #include <iostream>
 
-#define TIEMPO_ACTUAL \
-    chrono::high_resolution_clock::now()
-
-#define INICIAR_TIEMPO         \
+#define INICIAR_ALGORITMO         \
     cout << "Paso: 1" << endl; \
-    auto t = TIEMPO_ACTUAL;
+    auto t = chrono::high_resolution_clock::now();
 
 #define INICIAR_PASO(paso) \
-    cout << "Paso: " << paso << " " << (TIEMPO_ACTUAL - t).count() << endl;
+    cout << "Paso: " << paso << " " << \
+        (chrono::high_resolution_clock::now() - t).count() << endl;
 
 #else
 
-#define TIEMPO_ACTUAL
-#define INICIAR_TIEMPO
+#define INICIAR_ALGORITMO
 #define INICIAR_PASO(paso)
 
 #endif
@@ -37,11 +34,10 @@ using namespace std;
 // Algoritmo de Ciaccia - Patella
 Nodo *ciaccia_patella(Conjunto const &p_in) {
 
-    INICIAR_TIEMPO
+    INICIAR_ALGORITMO
     if (p_in.size() < B) {
-        return crear_nodo(p_in);
-    }
-
+        return crear_nodo(p_in); 
+   }
 
     paso_2:
     INICIAR_PASO(2)
