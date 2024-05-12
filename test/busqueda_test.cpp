@@ -9,7 +9,7 @@
 #include "sexton_swinbank.hpp"
 #include "tarea.hpp"
 #include "tarea_test.hpp"
-
+#include "fstream"
 using namespace std;
 
 vector<vector<int>> matriz_accesos(16, std::vector<int>(100));
@@ -42,43 +42,25 @@ void test_tiempos_accesos() {
     }
 }
 
-double Media(vector<double> &muestra) {
-    double suma = 0.0;
-    int tamaño = muestra.size();
-    for (double valor : muestra) {
-        suma += valor;
+void crear_txts(){
+    ofstream archivo1("archivo_accesos");
+    ofstream archivo2("archivo_tiempos");
+    int potencia=10;
+    for (int i=0;i<16;i++){
+        archivo1<<"arbol 2 a la "+to_string(potencia)+"\n";
+        archivo2<<"arbol 2 a la "+to_string(potencia)+"\n";
+        potencia++;
+        for(int j=0;j<100;j++){
+            archivo1<<to_string(matriz_accesos[i][j])+"\n";
+            archivo2<<to_string(matriz_tiempos[i][j])+"\n";
+        }
     }
-    return suma / tamaño;
+    archivo1.close();
+    archivo2.close();
 }
 
-double Desviacion(vector<double> &muestra, double media) {
-    double suma = 0.0;
-    int tamaño = muestra.size();
-
-    for (double valor_muestra) {
-        suma += ((valor.media) * (valor - media));
-    }
-    double raiz = sqrt(suma / tamaño);
-    return raiz;
-}
-
-pair<double, double> intervaloConfianza(vector) double
-    &muestra,
-    double nivel_confianza {
-    double media = Media(muestra);
-    double desviacion = Desviacion(muestra, media);
-    double margen = 1.96 * desviacion / sqrt(muestra.size());
-    pair<double, double> par = make_pair(media - margen, media + margen);
-    return par;
-}
-}
-
-void test_intervalo_confianz(vector<double> &muestra) {
-    double nivel_confianza = 0.95;
-    pair<double, double> intervalo_confianza = intervaloConfianza(muestra, nivel_confianza);
-}
 
 int main(void) {
     test_tiempos_accesos();
-    test_intervalo_confianza();
+    crear_txts();
 }
