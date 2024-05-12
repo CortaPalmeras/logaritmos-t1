@@ -161,18 +161,8 @@ void añadir_antes(dll *nodo_actual, dll *nodo) {
     nodo_actual->previo = nodo;
 }
 
-void añadir_nodo(dll *primero, dll *nodo, mat_distancias &d, int i, int n) {
-
-    // Caso en el que la distancia con el punto n es menor
-    // a la distancia con el primer elemento de la lista.
-    // if (d[i][n] < d[i][(*primero)->indice]) {
-    //     añadir_primero(primero, nodo);
-    //     return;
-    // }
-
+void añadir_nodo(dll *primero, dll *nodo, mat_distancias const &d, int i, int n) {
     // se avanza por las colas hasta encontrar donde debe ir el punto n.
-    // dll *nodo_actual = *primero;
-
     while (true) {
         // caso: se encuentra un punto con mayor distancia
         if (d[i][n] < d[i][primero->indice]) {

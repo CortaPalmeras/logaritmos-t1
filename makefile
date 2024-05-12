@@ -33,7 +33,9 @@ mm_test := $(test_dir)/$(mm)_test.cpp
 bu_test := $(test_dir)/$(bu)_test.cpp
 
 test_head := $(test_dir)/$(t1)_test.hpp
-graph_py := $(test_dir)/graficos_intervalos.py
+
+result_dir := ./resultados
+graph_py := $(result_dir)/graficos_intervalos.py
 
 t1_files := $(t1_test) $(t1_src)
 cp_files := $(t1_files) $(cp_test) $(cp_src) 
@@ -57,7 +59,7 @@ else
 	CPPFLAGS += -O3
 endif
 
-# Crear binarios para el metodo de Ciaccia-Patella
+# Ejecutar tests para el metodo de Ciaccia-Patella
 $(cp): $(cp_bin)
 	$(cp_bin)
 
