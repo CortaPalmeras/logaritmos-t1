@@ -14,7 +14,6 @@
 
 using namespace std;
 
-
 #define TESTEAR_CIACCIA_PATELLA 0
 #define TESTEAR_SEXTON_SWINBANK 1
 
@@ -29,7 +28,7 @@ int main(void) {
 
      #if TESTEAR_CIACCIA_PATELLA
 
-    cout << "\nGenerando arboles con Ciaccia-Patella:" << endl;
+    cout << "\nBusqueda en arboles generados con Ciaccia-Patella:" << endl;
 
     vaciar_archivo("./resultados/accesos_cp.txt");
     vaciar_archivo("./resultados/tiempos_cp.txt");
@@ -48,9 +47,11 @@ int main(void) {
         archivo_accesos_cp << "arbol 2^" + to_string(n) + " puntos\n";
         archivo_tiempos_cp << "arbol 2^" + to_string(n) + " puntos\n";
 
-        std::cout << "Testeando con 2^" << n << " puntos: ";
+        std::cout << "Testeando con 2^" << n << " puntos: Generando arbol... ";
 
         Nodo *arbol = ciaccia_patella(*puntos);
+
+        std::cout << "Ejecutando consultas... ";
 
         for (int j = 0; j < 100; j++) {
             Conjunto output_busqueda;
@@ -63,7 +64,7 @@ int main(void) {
             archivo_tiempos_cp << to_string(duracion.count()) + "\n";
         }
 
-        cout << "Listo." << endl;
+        cout << "Listo!" << endl;
 
         eliminar_arbol(arbol);
         eliminar_conjunto_puntos(puntos);
@@ -77,7 +78,7 @@ int main(void) {
 
     #if TESTEAR_SEXTON_SWINBANK
 
-    cout << "\nBusqueda en aarboles generados con Sexton-Swinbank:" << endl;
+    cout << "\nBusqueda en arboles generados con Sexton-Swinbank:" << endl;
 
     vaciar_archivo("./resultados/accesos_ss.txt");
     vaciar_archivo("./resultados/tiempos_ss.txt");
@@ -96,9 +97,11 @@ int main(void) {
         archivo_accesos_ss << "arbol 2^" + to_string(n) + " puntos.\n";
         archivo_tiempos_ss << "arbol 2^" + to_string(n) + " puntos.\n";
 
-        std::cout << "Testeando con 2^" << n << " puntos: ";
+        std::cout << "Testeando con 2^" << n << " puntos: Generando arbol... ";
 
         Nodo *arbol = sexton_swinbank(*puntos);
+
+        std::cout << "Ejecutando consultas... ";
 
         for (int j = 0; j < 100; j++) {
             Conjunto output_busqueda;
