@@ -59,6 +59,9 @@ else
 	CPPFLAGS += -O3
 endif
 
+
+all: $(cp) $(mm) $(ss)  $(bu)
+
 # Ejecutar tests para el metodo de Ciaccia-Patella
 $(cp): $(cp_bin)
 	$(cp_bin)

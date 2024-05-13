@@ -14,7 +14,7 @@
 
 using namespace std;
 
-#define TESTEAR_CIACCIA_PATELLA 0
+#define TESTEAR_CIACCIA_PATELLA 1
 #define TESTEAR_SEXTON_SWINBANK 1
 
 void vaciar_archivo(string nombre) {
@@ -47,11 +47,9 @@ int main(void) {
         archivo_accesos_cp << "arbol 2^" + to_string(n) + " puntos\n";
         archivo_tiempos_cp << "arbol 2^" + to_string(n) + " puntos\n";
 
-        std::cout << "Testeando con 2^" << n << " puntos: Generando arbol... ";
+        std::cout << "Testeando con 2^" << n << " puntos: ";
 
         Nodo *arbol = ciaccia_patella(*puntos);
-
-        std::cout << "Ejecutando consultas... ";
 
         for (int j = 0; j < 100; j++) {
             Conjunto output_busqueda;
@@ -97,11 +95,9 @@ int main(void) {
         archivo_accesos_ss << "arbol 2^" + to_string(n) + " puntos.\n";
         archivo_tiempos_ss << "arbol 2^" + to_string(n) + " puntos.\n";
 
-        std::cout << "Testeando con 2^" << n << " puntos: Generando arbol... ";
+        std::cout << "Testeando con 2^" << n << " puntos: ";
 
         Nodo *arbol = sexton_swinbank(*puntos);
-
-        std::cout << "Ejecutando consultas... ";
 
         for (int j = 0; j < 100; j++) {
             Conjunto output_busqueda;

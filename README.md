@@ -6,7 +6,6 @@
 - Un compilador de C++, puede ser `g++` o `clang++`.
 - `make` para ejecutar los comandos.
 - Alguna distribución de Linux, la tarea fue probada en Debian.
-- `Python3` si se desea generar los gráficos mostrados en el informe.
 
 #### Instrucciones de ejecución:
 
@@ -16,19 +15,29 @@ este comportamiento se puede la opción `CXX` en el comando, por ejemplo: `make 
 va a hacer que se compile con `clang++`, es necesario que el compilador que se 
 utilice acepte las mismas flags especificadas en el archivo makefile.
 
+También se puede compilar y ejecutar un test expecifico con 
+los comandos: `make sexton_swinbank`, `make minmax`,
+`make ciaccia_patella` y `make busqueda`.
+
 #### Layout de la tarea:
 
 ```
 .
 ├── makefile
 ├── README.md
-├── compile_flags.txt
 ├── bin
 ├── include
 │   ├── busqueda.hpp
 │   ├── ciaccia_patella.hpp
+│   ├── minmax.hpp
 │   ├── sexton_swinbank.hpp
 │   └── tarea.hpp
+├── resultados
+│   ├── accesos_cp.txt
+│   ├── accesos_ss.txt
+│   ├── graficos_intervalos.py
+│   ├── tiempos_cp.txt
+│   └── tiempos_ss.txt
 ├── src
 │   ├── busqueda.cpp
 │   ├── ciaccia_patella.cpp
@@ -39,8 +48,7 @@ utilice acepte las mismas flags especificadas en el archivo makefile.
     ├── busqueda_test.cpp
     ├── ciaccia_patella_test.cpp
     ├── minmax_test.cpp
-    ├── sexton_swinbak_test.cpp
+    ├── sexton_swinbank_test.cpp
     ├── tarea_test.cpp
     └── tarea_test.hpp
 ```
-
