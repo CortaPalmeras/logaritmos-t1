@@ -6,7 +6,7 @@ arboles_tiempos = []
 
 
 def leer_accesos():
-    with open("archivo_accesos", "r") as f:
+    with open("", "r") as f:
         actual = -1
         for linea in f:
             if linea[0] == "a":

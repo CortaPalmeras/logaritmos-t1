@@ -2,6 +2,7 @@
 #include <chrono>
 #include <cmath>
 #include <iostream>
+#include <string>
 #include <vector>
 
 #include "busqueda.hpp"
@@ -10,80 +11,118 @@
 #include "sexton_swinbank.hpp"
 #include "tarea.hpp"
 #include "tarea_test.hpp"
+
 using namespace std;
 
-vector<vector<int>> cp_accesos(16, std::vector<int>(100));
-vector<vector<int>> cp_tiempos(16, std::vector<int>(100));
 
-vector<vector<int>> ss_accesos(16, std::vector<int>(100));
-vector<vector<int>> ss_tiempos(16, std::vector<int>(100));
+#define TESTEAR_CIACCIA_PATELLA 0
+#define TESTEAR_SEXTON_SWINBANK 1
 
-void test_tiempos_accesos() {
-    cout << " --- TEST: TIEMPOS Y ACCESOS DE BUSQUEDA ---\n\n";
-
-    for (int i = 0; i <= 15; i++) {
-        int n = i + 10;
-        std::cout << "Testeando con 2^" << n << " puntos\n";
-
-        Conjunto *puntos = generar_conjunto_puntos(pow(2, n));
-        vector<Query> *queries = generar_conjunto_queries(100);
-
-
-        cout << "Con arbol generado con Ciaccia-Patella: ";
-        Nodo *arbol = ciaccia_patella(*puntos);
-        for (int j = 0; j < 100; j++) {
-            auto inicio = chrono::high_resolution_clock::now();
-
-            Conjunto output_busqueda;
-            cp_accesos[i][j] = busqueda(*arbol, (*queries)[j], output_busqueda);
-
-            auto fin = chrono::high_resolution_clock::now();
-            auto duracion = chrono::duration_cast<std::chrono::microseconds>(fin - inicio);
-            cp_tiempos[i][j] = duracion.count();
-        }
-        eliminar_arbol(arbol);
-        cout << "Listo." << endl;
-        
-
-        cout << "Con arbol generado con Sexton-Swinbank: ";
-        arbol = sexton_swinbank(*puntos);
-        for (int j = 0; j < 100; j++) {
-            auto inicio = chrono::high_resolution_clock::now();
-
-            Conjunto output_busqueda;
-            ss_accesos[i][j] = busqueda(*arbol, (*queries)[j], output_busqueda);
-
-            auto fin = chrono::high_resolution_clock::now();
-            auto duracion = chrono::duration_cast<std::chrono::microseconds>(fin - inicio);
-            ss_tiempos[i][j] = duracion.count();
-        }
-        eliminar_arbol(arbol);
-        cout << "Listo." << endl;
-
-
-        eliminar_conjunto_puntos(puntos);
-        eliminar_conjunto_queries(queries);
-    }
-}
-
-void crear_txts() {
-    ofstream archivo1("resultados/cp_accesos.txt");
-    ofstream archivo2("resultados/cp_tiempos.txt");
-    int potencia = 10;
-    for (int i = 0; i < 16; i++) {
-        archivo1 << "arbol 2 a la " + to_string(potencia) + "\n";
-        archivo2 << "arbol 2 a la " + to_string(potencia) + "\n";
-        potencia++;
-        for (int j = 0; j < 100; j++) {
-            archivo1 << to_string(cp_accesos[i][j]) + "\n";
-            archivo2 << to_string(cp_tiempos[i][j]) + "\n";
-        }
-    }
-    archivo1.close();
-    archivo2.close();
+void vaciar_archivo(string nombre) {
+    ofstream archivo(nombre);
+    archivo.close();
 }
 
 int main(void) {
-    test_tiempos_accesos();
-    crear_txts();
+
+    cout << " --- TEST: TIEMPOS Y ACCESOS DE BUSQUEDA ---" << endl;
+
+     #if TESTEAR_CIACCIA_PATELLA
+
+    cout << "\nGenerando arboles con Ciaccia-Patella:" << endl;
+
+    vaciar_archivo("./resultados/accesos_cp.txt");
+    vaciar_archivo("./resultados/tiempos_cp.txt");
+
+    for (int i = 0; i <= 15; i++) {
+
+        reiniciar_rng(GLOBAL_DEFAULT_RANDOM_SEED * i);
+
+        int n = i + 10;
+        Conjunto *puntos = generar_conjunto_puntos(pow(2, n));
+        vector<Query> *queries = generar_conjunto_queries(100);
+
+        ofstream archivo_accesos_cp("./resultados/accesos_cp.txt", ios::app);
+        ofstream archivo_tiempos_cp("./resultados/tiempos_cp.txt", ios::app);
+
+        archivo_accesos_cp << "arbol 2^" + to_string(n) + " puntos\n";
+        archivo_tiempos_cp << "arbol 2^" + to_string(n) + " puntos\n";
+
+        std::cout << "Testeando con 2^" << n << " puntos: ";
+
+        Nodo *arbol = ciaccia_patella(*puntos);
+
+        for (int j = 0; j < 100; j++) {
+            Conjunto output_busqueda;
+            auto inicio = chrono::high_resolution_clock::now();
+
+            archivo_accesos_cp << to_string(busqueda(*arbol, (*queries)[j], output_busqueda)) + "\n";
+
+            auto fin = chrono::high_resolution_clock::now();
+            auto duracion = chrono::duration_cast<std::chrono::microseconds>(fin - inicio);
+            archivo_tiempos_cp << to_string(duracion.count()) + "\n";
+        }
+
+        cout << "Listo." << endl;
+
+        eliminar_arbol(arbol);
+        eliminar_conjunto_puntos(puntos);
+        eliminar_conjunto_queries(queries);
+
+        archivo_accesos_cp.close();
+        archivo_tiempos_cp.close();
+    }
+
+    #endif // TESTEAR_CIACCIA_PATELLA
+
+    #if TESTEAR_SEXTON_SWINBANK
+
+    cout << "\nBusqueda en aarboles generados con Sexton-Swinbank:" << endl;
+
+    vaciar_archivo("./resultados/accesos_ss.txt");
+    vaciar_archivo("./resultados/tiempos_ss.txt");
+
+    for (int i = 0; i <= 15; i++) {
+
+        reiniciar_rng(GLOBAL_DEFAULT_RANDOM_SEED * i);
+
+        int n = i + 10;
+        Conjunto *puntos = generar_conjunto_puntos(pow(2, n));
+        vector<Query> *queries = generar_conjunto_queries(100);
+
+        ofstream archivo_accesos_ss("./resultados/accesos_ss.txt", ios::app);
+        ofstream archivo_tiempos_ss("./resultados/tiempos_ss.txt", ios::app);
+
+        archivo_accesos_ss << "arbol 2^" + to_string(n) + " puntos.\n";
+        archivo_tiempos_ss << "arbol 2^" + to_string(n) + " puntos.\n";
+
+        std::cout << "Testeando con 2^" << n << " puntos: ";
+
+        Nodo *arbol = sexton_swinbank(*puntos);
+
+        for (int j = 0; j < 100; j++) {
+            Conjunto output_busqueda;
+            auto inicio = chrono::high_resolution_clock::now();
+
+            archivo_accesos_ss << to_string(busqueda(*arbol, (*queries)[j], output_busqueda)) + "\n";
+
+            auto fin = chrono::high_resolution_clock::now();
+            auto duracion = chrono::duration_cast<std::chrono::microseconds>(fin - inicio);
+
+            archivo_tiempos_ss << to_string(duracion.count()) + "\n";
+        }
+
+        cout << "Listo." << endl;
+
+        eliminar_arbol(arbol);
+        eliminar_conjunto_puntos(puntos);
+        eliminar_conjunto_queries(queries);
+
+        archivo_accesos_ss.close();
+        archivo_tiempos_ss.close();
+    }
+
+    #endif //TESTEAR_SEXTON_SWINBANK
+
+    return 0;
 }
