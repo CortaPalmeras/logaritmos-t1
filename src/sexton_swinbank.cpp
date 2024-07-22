@@ -8,14 +8,51 @@
 #include "sexton_swinbank.hpp"
 #include "tarea.hpp"
 
+#define TOMAR_TIEMPO 1
+
+#if TOMAR_TIEMPO
+
+#include <chrono>
+#include <iostream>
+
+#define INICIAR_ALGORITMO      \
+    auto t = std::chrono::high_resolution_clock::now(); \
+    uint tiempos [10]; \
+    for (int i = 0; i < 10; i++) { \
+        tiempos[i] = 0; \
+    }\
+
+#define TERMINAR_PASO(paso) \
+    tiempos[paso] += (chrono::high_resolution_clock::now() - t).count(); \
+    t = std::chrono::high_resolution_clock::now(); \
+
+#define PRINT_TIEMPOS \
+    for (int i = 0; i < 10; i++) { \
+        cout << "Tiempo gastado en paso " << i << ": " << tiempos[i] << endl;\
+    } \
+
+#else
+
+#define INICIAR_ALGORITMO
+#define TERMINAR_PASO(paso)
+
+#endif
+
 using namespace std;
 
-Nodo *sexton_swinbank(Conjunto &c_in) {
+Nodo *sexton_swinbank(Conjunto &c_in) {    
+    INICIAR_ALGORITMO
+    TERMINAR_PASO(0)
+
     if (c_in.size() <= B) {
         return crear_nodo(c_in);
     }
 
+    TERMINAR_PASO(1)
+
     Particion *c_out = crear_clusters(c_in);
+
+    TERMINAR_PASO(2)
 
     vector<Entry> c;
     unordered_map<Punto, int, PuntoHash> puntos_a_indices;
@@ -27,6 +64,8 @@ Nodo *sexton_swinbank(Conjunto &c_in) {
 
     while (c.size() > B) {
 
+        TERMINAR_PASO(3)
+
         Conjunto medoides;
 
         for (uint i = 0; i < c.size(); i++) {
@@ -34,7 +73,12 @@ Nodo *sexton_swinbank(Conjunto &c_in) {
             medoides.push_back(c[i].p);
         }
 
+        TERMINAR_PASO(4)
+
         c_out = crear_clusters(medoides);
+
+
+        TERMINAR_PASO(5)
 
         vector<vector<Entry>> c_mra;
 
@@ -48,15 +92,23 @@ Nodo *sexton_swinbank(Conjunto &c_in) {
             c_mra.push_back(s);
         }
 
+
+        TERMINAR_PASO(6)
+
         c.clear();
         delete c_out;
 
         for (vector<Entry> &entries : c_mra) {
             c.push_back(output_interno(entries));
         }
+        
+        TERMINAR_PASO(7)
     }
 
     Entry entrada = output_interno(c);
+
+    PRINT_TIEMPOS
+
     return entrada.a;
 }
 
